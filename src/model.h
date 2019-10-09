@@ -357,82 +357,71 @@ namespace get_ll
     /** ///////////////////////////////////////////////////////////////////////////////////
      ////////////////////////////// 2. Import stuff //////////////////////////////
      //////////////////////////////////////////////////////////////////////////////////// **/
-    string const dout ="/Users/davidhodgson/Dropbox/programming/c++/calibration/cal_res";
+    string const filepath = "/Users/davidhodgson/Dropbox/PhD/code_full/";
     
-    //string calout_name = "/cal1/code_output/"; //
-    //string calout_name = "/cal2/code_output/"; //
-    //string calout_name = "/cal3/code_output/"; //
-    //string calout_name = "/cal4/code_output/"; //
-    //string calout_name = "/cal5_exp/code_output/"; //
-    
-    //string calout_name = "/cal1_mat/code_output/"; //
-    //tring calout_name = "/cal2_mat/code_output/"; //
-    //string calout_name = "/cal3_mat/code_output/"; //
-    //string calout_name = "/cal4_mat/code_output/"; //
-    //string calout_name = "/cal5_exp_mat/code_output/"; //
-#ifdef Minutes
-    string calout_name = "/cal5_exp_mat_min/code_output/"; //
-#else
-    string calout_name = "/cal5_exp_mat/code_output/"; //
-#endif
-    string calout_debug = "/outputs/debug/";
-    
-    string const wdir = "/Users/davidhodgson/Dropbox/programming/c++/calibration/code_only";
-    string const wpos = "/Users/davidhodgson/Dropbox/programming/c++/calibration/code_only";
-    
-    //Out Files //
-    string FilePar = wdir + "/outputs/debug/" + "par.txt";      //The list of parameters used in the solution
-    string FileData = wdir + "/outputs/debug/" + "pos_samples.txt";      //Output of the reconstructed calibration data
-    
+    string const din = filepath + "inputs/";
     // Demographic files
-    const string data_wdir = wdir + "/" + "obs_data";
-    string FileDemo = data_wdir + "/" + "pop_age_17_conv.txt"; //The source of the demography of the UK age groups
-    string FileBDrate = data_wdir + "/" + "bd_rate.txt"; //The source of the demography of the UK age groups
-    string FileAgerate = data_wdir + "/" + "age_rate.txt"; //The source of the demography of the UK age groups
-    string FilePropmat = data_wdir + "/" + "prop_par.txt"; //The source of the demography of the UK age groups
-    string FileMatdist = data_wdir + "/" + "prop_mat.txt"; //The source of the demography of the UK age groups
-    string FilePropRisk = data_wdir + "/" + "proprisk.txt"; //The source of the demography of the UK age groups
+    const string in_demo = din + "demo/";
+    string FileDemo = in_demo + "pop_age_17_conv.txt"; //The source of the demography of the UK age groups
+    string FileBDrate = in_demo + "bd_rate.txt"; //The source of the demography of the UK age groups
+    string FileAgerate = in_demo +  "age_rate.txt"; //The source of the demography of the UK age groups
+    string FilePropmat = in_demo + "prop_par.txt"; //The source of the demography of the UK age groups
+    string FileMatdist = in_demo + "prop_mat.txt"; //The source of the demography of the UK age groups
+    string FilePropRisk = in_demo + "proprisk.txt"; //The source of the demography of the UK age groups
+    string FilePalAge = in_demo +  "palpro_age.txt";
 
     // Surveillance data
-    string FileRDMSRSVpos = data_wdir + "/RSV_RSDM_pos_trim.txt";
-    string FileRDMSScalarTest = data_wdir +  "/scalar.txt";
-    
-    //Pal
-    string FilePalAge = data_wdir +  "/palpro_age.txt";
+    const string in_rdms = din + "rdms/";
+    string FileRDMSRSVpos = in_rdms + "/RSV_RSDM_pos_trim.txt";
+    string FileRDMSScalarTest = in_rdms +  "/scalar.txt";
     
     // Contact matrices
+    const string in_cnt_mat = din + "cnt_mat/";
 #ifdef Minutes
-    string filecontact_phys = data_wdir + "/cntMinPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_phys_home = data_wdir + "/cntMinPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_p = data_wdir + "/cntMinPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_p = data_wdir + "/cntMinPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_p = data_wdir + "/cntMinPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_p = data_wdir + "/cntMinPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv = data_wdir + "/cntMinCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv_home = data_wdir + "/cntMinCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_c = data_wdir + "/cntMinCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_c = data_wdir + "/cntMinCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_c = data_wdir + "/cntMinCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_c = data_wdir + "/cntMinCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys = in_cnt_mat + "/cntMinPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys_home = in_cnt_mat + "/cntMinPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_p = in_cnt_mat + "/cntMinPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_p = in_cnt_mat + "/cntMinPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_p = in_cnt_mat + "/cntMinPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_p = in_cnt_mat + "/cntMinPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv = in_cnt_mat + "/cntMinCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv_home = in_cnt_mat + "/cntMinCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_c = in_cnt_mat + "/cntMinCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_c = in_cnt_mat + "/cntMinCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_c = in_cnt_mat + "/cntMinCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_c = in_cnt_mat + "/cntMinCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
 #else
-    string filecontact_phys = data_wdir + "/cntPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_phys_home = data_wdir + "/cntPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_p = data_wdir + "/cntPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_p = data_wdir + "/cntPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_p = data_wdir + "/cntPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_p = data_wdir + "/cntPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv = data_wdir + "/cntCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv_home = data_wdir + "/cntCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_c = data_wdir + "/cntCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_c = data_wdir + "/cntCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_c = data_wdir + "/cntCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_c = data_wdir + "/cntCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys = in_cnt_mat + "/cntPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys_home = in_cnt_mat + "/cntPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_p = in_cnt_mat + "/cntPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_p = in_cnt_mat + "/cntPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_p = in_cnt_mat + "/cntPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_p = in_cnt_mat + "/cntPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv = in_cnt_mat + "/cntCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv_home = in_cnt_mat + "/cntCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_c = in_cnt_mat + "/cntCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_c = in_cnt_mat + "/cntCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_c = in_cnt_mat + "/cntCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_c = in_cnt_mat + "/cntCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
 #endif
     
+    
+    //Out Files //
+    string const dout = filepath + "outputs/";
+    string FilePar = dout + "data/par.txt";      //The list of parameters used in the solution
+    string FileData = dout + "data/pos_samples.txt";      //Output of the reconstructed calibration data
+    
+    
     // Posterior samples
-    string fileposterior_in = dout + calout_name + "mc/posterior_A.txt";
+#ifdef Minutes
+    string model_t = dout + "cal/m2d5min/"; //
+#else
+    string model_t = dout + "cal/m2d5cnt/"; //
+#endif
+    
+    string fileposterior_in = model_t + "posterior_A.txt";
     //string fileposterior_in = dout + calout_name + "mc/posterior_A_edit.txt";
-    string fileannualinc = dout + calout_name + "soln/annual_sample_Z.txt";
+    string fileannualinc = dout + "soln/annual_sample_Z.txt";
 
     
     

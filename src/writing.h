@@ -221,7 +221,7 @@ namespace sim_ouput
                 x_annual[a][s] = x_annual_t[s][a];
             }
         
-        string outmcyr = dout + calout_name + "soln/" + "annual_sample_" + F + ".txt";
+        string outmcyr = dout + "soln/" + "annual_sample_" + F + ".txt";
         //string FileMC_chain_M_full = outmcyr + "MC_chain_M_full_" + F + ".txt";      //Output MC
         ofstream annual_out(outmcyr.c_str());
         for (int a = 0; a < NoAgeG; a++)
@@ -251,7 +251,7 @@ namespace sim_ouput
             }
         }
         
-        recorder_inci.csv(get_ll::dout + get_ll::calout_name + "soln/" + "inci_sample_" + F, {"Age group", "t", "0.025", "0.25","0.5", "0.75", "0.975"});
+        recorder_inci.csv(get_ll::dout + "soln/inci_sample_" + F, {"Age group", "t", "0.025", "0.25","0.5", "0.75", "0.975"});
         
         for (int a = 0; a < NoAgeG; a++)
         {
@@ -269,7 +269,7 @@ namespace sim_ouput
                 recorder_pos.add(filtered_pos);
             }
         }
-        recorder_pos.csv(get_ll::dout + get_ll::calout_name + "soln/" + "pos_sample_" + F, {"Age group", "t", "0.025", "0.25","0.5", "0.75", "0.975"});
+        recorder_pos.csv(get_ll::dout + "soln/" + "pos_sample_" + F, {"Age group", "t", "0.025", "0.25","0.5", "0.75", "0.975"});
     
     }
     
@@ -346,7 +346,7 @@ namespace sim_ouput
         recorder.add(foi_sum_pwn);
         recorder({(double)3});
         recorder.add(foi_sum_pwp);
-        recorder.csv(get_ll::dout + get_ll::calout_name + "soln/" + "foi_" + "All", {"Foi", "value"});
+        recorder.csv(get_ll::dout + "soln/" + "foi_" + "All", {"Foi", "value"});
     }
     
     void write_foi_mat(param::param_state_t& pars, amh::amh_state_t& mcmc_state, int i, double om_mab, double xi_b)
@@ -417,8 +417,8 @@ namespace sim_ouput
                 recorder2.add(foi[8]);
             }
         }
-        recorder1.csv(get_ll::dout + get_ll::calout_name + "soln/" + "foi_mat_" + "1", {"Foi", "value"});
-        recorder2.csv(get_ll::dout + get_ll::calout_name + "soln/" + "foi_mat_" + "2", {"Foi", "value"});
+        recorder1.csv(get_ll::dout + "soln/" + "foi_mat_" + "1", {"Foi", "value"});
+        recorder2.csv(get_ll::dout + "soln/" + "foi_mat_" + "2", {"Foi", "value"});
 
     }
     
@@ -451,7 +451,7 @@ namespace sim_ouput
         }
         recorder({(double)0});
         recorder.add(pR);
-        recorder.csv(get_ll::dout + get_ll::calout_name + "soln/" + "pR", { "s", "week_no"});
+        recorder.csv(get_ll::dout + "soln/" + "pR", { "s", "week_no"});
     }
     
     
@@ -516,10 +516,10 @@ namespace sim_ouput
             get_newInf(ODE_desc_int_inst_m2, x04, t4, 1);
         }
         
-        recorder_1.csv(get_ll::dout + get_ll::calout_name + "soln/" + "full_1", { "t", "x0"});
-        recorder_2.csv(get_ll::dout + get_ll::calout_name + "soln/" + "full_2", { "t", "x0"});
-        recorder_3.csv(get_ll::dout + get_ll::calout_name + "soln/" + "full_3", { "t", "x0"});
-        recorder_4.csv(get_ll::dout + get_ll::calout_name + "soln/" + "full_3_mat", { "t", "x0"});
+        recorder_1.csv(get_ll::dout + "soln/" + "full_1", { "t", "x0"});
+        recorder_2.csv(get_ll::dout + "soln/" + "full_2", { "t", "x0"});
+        recorder_3.csv(get_ll::dout + "soln/" + "full_3", { "t", "x0"});
+        recorder_4.csv(get_ll::dout + "soln/" + "full_3_mat", { "t", "x0"});
     }
 
     
@@ -701,17 +701,17 @@ namespace sim_ouput
             record_ct({(double)seed[s]}); record_ct.add(CT);
         }
         
-        record_inc.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "inc", col_name);
-        record_inc_pri.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "incpri", col_name);
-        record_s.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "symp", col_name);
-        record_h.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "hosp", col_name);
-        record_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "death", col_name);
-        record_gp.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "gp", col_name);
-        record_bd.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "bd", col_name);
-        record_dose.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "no_doses",  {"seed", "Total numver of doses"});
-        record_q.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "qaly", {"seed", "Total QALY"});
-        record_cp.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "cost_pro",  {"seed", "Total Cost T"});
-        record_ct.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "cost_tre",  {"seed", "Total Cost T"});
+        record_inc.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc", col_name);
+        record_inc_pri.csv(get_ll::dout + "inter/" + prog_no + "/" + "incpri", col_name);
+        record_s.csv(get_ll::dout + "inter/" + prog_no + "/" + "symp", col_name);
+        record_h.csv(get_ll::dout + "inter/" + prog_no + "/" + "hosp", col_name);
+        record_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "death", col_name);
+        record_gp.csv(get_ll::dout + "inter/" + prog_no + "/" + "gp", col_name);
+        record_bd.csv(get_ll::dout + "inter/" + prog_no + "/" + "bd", col_name);
+        record_dose.csv(get_ll::dout + "inter/" + prog_no + "/" + "no_doses",  {"seed", "Total numver of doses"});
+        record_q.csv(get_ll::dout + "inter/" + prog_no + "/" + "qaly", {"seed", "Total QALY"});
+        record_cp.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_pro",  {"seed", "Total Cost T"});
+        record_ct.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_tre",  {"seed", "Total Cost T"});
 
         for (int s = 0; s < seed.size(); s++)
         {
@@ -749,17 +749,17 @@ namespace sim_ouput
             record_ct_d({(double)seed[s]}); record_ct_d.add(CT);
         }
         
-        record_inc_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "inc_d", col_name);
-        record_inc_d_pri.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "inc_pri_d", col_name);
-        record_s_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "symp_d", col_name);
-        record_h_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "hosp_d", col_name);
-        record_d_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "death_d", col_name);
-        record_gp_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "gp_d", col_name);
-        record_bd_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "bd_d", col_name);
-        record_dose_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "no_doses_d",  {"seed", "Total numver of doses"});
-        record_q_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "qaly_d", {"seed", "Total QALY"});
-        record_cp_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "cost_pro_d", {"seed", "Total Cost T"});
-        record_ct_d.csv(get_ll::dout + get_ll::calout_name + "inter/" + prog_no + "/" + "cost_tre_d", {"seed", "Total Cost T"});
+        record_inc_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc_d", col_name);
+        record_inc_d_pri.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc_pri_d", col_name);
+        record_s_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "symp_d", col_name);
+        record_h_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "hosp_d", col_name);
+        record_d_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "death_d", col_name);
+        record_gp_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "gp_d", col_name);
+        record_bd_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "bd_d", col_name);
+        record_dose_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "no_doses_d",  {"seed", "Total numver of doses"});
+        record_q_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "qaly_d", {"seed", "Total QALY"});
+        record_cp_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_pro_d", {"seed", "Total Cost T"});
+        record_ct_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_tre_d", {"seed", "Total Cost T"});
     }
 }
 

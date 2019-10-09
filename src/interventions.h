@@ -752,7 +752,7 @@ namespace interventions
         no_dose(12) = popsize[24]*cov[13] + pal_num*cov[1];                           // 75+
         no_dose(13) = (popsize[24]+popsize[23]) + pal_num*cov[1];             // 65+
         
-        string outvacno = get_ll::dout +  get_ll::calout_name + "inter/";
+        string outvacno = get_ll::dout +  "inter/";
         string File_vacno = outvacno + "vac_no.txt";      //Output MC
         ofstream File_vacno_out(File_vacno.c_str());
         File_vacno_out << no_dose;

@@ -35,7 +35,6 @@ using namespace std;
 
 #include "Eigen/Dense"
 #include "ascent/Ascent.h"
-#include "libMvtnorm/mvtnorm.h"
 
 using namespace asc;
 using namespace Eigen;
@@ -165,7 +164,7 @@ void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state,
         recorder({(double)w});
         recorder.add(tot_incp);
     }
-    recorder.csv(get_ll::dout + get_ll::calout_name + "soln/" + "find_optimal" , prog_no_out);
+    recorder.csv(get_ll::dout + "soln/" + "find_optimal" , prog_no_out);
 }
 
 

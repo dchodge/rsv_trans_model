@@ -176,7 +176,7 @@ namespace qaly_data
 
 void output_fitted_dist()
 {
-    string outmcyr = dout + calout_name + "soln/" + "risks";
+    string outmcyr = dout + "soln/" + "risks";
     //string FileMC_chain_M_full = outmcyr + "MC_chain_M_full_" + F + ".txt";      //Output MC
     ofstream risks_out(outmcyr.c_str());
     num_vec inc;

@@ -262,38 +262,37 @@ namespace amh
     void write_mcmc (amh::amh_state_t& mcmc_state,  param::param_state_t& pars, char F)
     {
         
-        string outmcyr = get_ll::dout +  get_ll::calout_name + "mc/";;
-        string FileMC_chain_explore = outmcyr + "MC_chain_explore_" + F + ".txt";      //Output MC
+        string FileMC_chain_explore = get_ll::model_t + "MC_chain_explore_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_explore_out(FileMC_chain_explore.c_str());
         FileMC_chain_explore_out << mcmc_state.explore;
         FileMC_chain_explore_out.close();
         
-        string FileMC_chain = outmcyr + "MC_chain_" + F + ".txt";      //Output MC
+        string FileMC_chain = get_ll::model_t + "MC_chain_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_out(FileMC_chain.c_str());
         FileMC_chain_out << mcmc_state.result;
         FileMC_chain_out.close();
         
-        string FileMC_chain_like = outmcyr + "MC_chain_like_" + F + ".txt";      //Output MC
+        string FileMC_chain_like = get_ll::model_t + "MC_chain_like_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_like_out(FileMC_chain_like.c_str());
         FileMC_chain_like_out << mcmc_state.llikelihoods;
         FileMC_chain_like_out.close();
         
-        string FileMC_acceptance = outmcyr + "MC_acceptance_" + F + ".txt";      //Output MC
+        string FileMC_acceptance = get_ll::model_t + "MC_acceptance_" + F + ".txt";      //Output MC
         ofstream FileMC_accpt(FileMC_acceptance.c_str());
         FileMC_accpt << mcmc_state.accept_ratios;
         FileMC_accpt.close();
         
-        string FileMC_posterior = outmcyr + "posterior_" + F + ".txt";      //Output MC
+        string FileMC_posterior = get_ll::model_t + "posterior_" + F + ".txt";      //Output MC
         ofstream FileMC_posterior_out(FileMC_posterior.c_str());
         FileMC_posterior_out << mcmc_state.posterior;
         FileMC_posterior_out.close();
         
-        string FileMC_chain_like_con = outmcyr + "MC_chain_like_post_" + F + ".txt";      //Output MC
+        string FileMC_chain_like_con = get_ll::model_t + "MC_chain_like_post_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_like_out_con(FileMC_chain_like_con.c_str());
         FileMC_chain_like_out_con << mcmc_state.llikelihoods_post;
         FileMC_chain_like_out_con.close();
         
-        string FileMC_acceptance_con = outmcyr + "MC_acceptance_post_" + F + ".txt";      //Output MC
+        string FileMC_acceptance_con = get_ll::model_t + "MC_acceptance_post_" + F + ".txt";      //Output MC
         ofstream FileMC_accpt_con(FileMC_acceptance_con.c_str());
         FileMC_accpt_con << mcmc_state.accept_ratios_post;
         FileMC_accpt_con.close();
@@ -301,7 +300,7 @@ namespace amh
         
         /* Write out chain files */
         
-        string FileMC_covar = outmcyr + "covar_" + F + ".txt";      //Output MC
+        string FileMC_covar = get_ll::model_t + "covar_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_covar(FileMC_covar.c_str());
         FileMC_chain_covar << mcmc_state.emp_cov_matrix_fix;
         FileMC_chain_covar << endl;
@@ -657,23 +656,22 @@ namespace mhp
     
     void write_mhp_state(mhp_state_t &mhp_state, char F)
     {
-        string outmcyr = get_ll::dout +  get_ll::calout_name + "mc/";
-        string FileMC_chain_M_full = outmcyr + "MC_chain_M_full_" + F + ".txt";      //Output MC
+        string FileMC_chain_M_full = get_ll::model_t + "MC_chain_M_full_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_M_full_out(FileMC_chain_M_full.c_str());
         FileMC_chain_M_full_out << mhp_state.M_full;
         FileMC_chain_M_full_out.close();
         
-        string FileMC_chain_T_full = outmcyr + "MC_chain_T_full_" + F + ".txt";      //Output MC
+        string FileMC_chain_T_full = get_ll::model_t + "MC_chain_T_full_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_T_full_out(FileMC_chain_T_full.c_str());
         FileMC_chain_T_full_out << mhp_state.T_full;
         FileMC_chain_T_full_out.close();
         
-        string FileMC_chain_A_full = outmcyr + "MC_chain_A_full_" + F + ".txt";      //Output MC
+        string FileMC_chain_A_full = get_ll::model_t + "MC_chain_A_full_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_A_full_out(FileMC_chain_A_full.c_str());
         FileMC_chain_A_full_out << mhp_state.A_full;
         FileMC_chain_A_full_out.close();
         
-        string FileMC_chain_S_full = outmcyr + "MC_chain_S_full_" + F + ".txt";      //Output MC
+        string FileMC_chain_S_full = get_ll::model_t + "MC_chain_S_full_" + F + ".txt";      //Output MC
         ofstream FileMC_chain_S_full_out(FileMC_chain_S_full.c_str());
         FileMC_chain_S_full_out << mhp_state.S_full;
         FileMC_chain_S_full_out.close();

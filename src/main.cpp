@@ -20,9 +20,11 @@
 
 using namespace std;
 
+
 #include <math.h>
 #include <cmath>
 
+// Boost dependencies
 #include <boost/random.hpp>
 #include <boost/numeric/odeint.hpp>
 #include <boost/math/distributions.hpp>
@@ -33,12 +35,13 @@ using namespace std;
 #include <vector>
 #include <random>
 
+// Prepackaged header files
 #include "Eigen/Dense"
 #include "ascent/Ascent.h"
-
 using namespace asc;
 using namespace Eigen;
 
+// Other header files
 #include "pre.h"
 #include "epmgp.h"
 #include "model.h"

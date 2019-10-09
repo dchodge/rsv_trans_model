@@ -372,37 +372,37 @@ namespace get_ll
 
     // Surveillance data
     const string in_rdms = din + "rdms/";
-    string FileRDMSRSVpos = in_rdms + "/RSV_RSDM_pos_trim.txt";
-    string FileRDMSScalarTest = in_rdms +  "/scalar.txt";
+    string FileRDMSRSVpos = in_rdms + "RSV_RSDM_pos_trim.txt";
+    string FileRDMSScalarTest = in_rdms +  "scalar.txt";
     
     // Contact matrices
     const string in_cnt_mat = din + "cnt_mat/";
 #ifdef Minutes
-    string filecontact_phys = in_cnt_mat + "/cntMinPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_phys_home = in_cnt_mat + "/cntMinPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_p = in_cnt_mat + "/cntMinPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_p = in_cnt_mat + "/cntMinPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_p = in_cnt_mat + "/cntMinPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_p = in_cnt_mat + "/cntMinPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv = in_cnt_mat + "/cntMinCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv_home = in_cnt_mat + "/cntMinCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_c = in_cnt_mat + "/cntMinCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_c = in_cnt_mat + "/cntMinCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_c = in_cnt_mat + "/cntMinCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_c = in_cnt_mat + "/cntMinCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys = in_cnt_mat + "cntMinPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys_home = in_cnt_mat + "cntMinPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_p = in_cnt_mat + "cntMinPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_p = in_cnt_mat + "cntMinPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_p = in_cnt_mat + "cntMinPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_p = in_cnt_mat + "cntMinPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv = in_cnt_mat + "cntMinCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv_home = in_cnt_mat + "cntMinCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_c = in_cnt_mat + "cntMinCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_c = in_cnt_mat + "cntMinCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_c = in_cnt_mat + "cntMinCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_c = in_cnt_mat + "cntMinCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
 #else
-    string filecontact_phys = in_cnt_mat + "/cntPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_phys_home = in_cnt_mat + "/cntPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_p = in_cnt_mat + "/cntPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_p = in_cnt_mat + "/cntPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_p = in_cnt_mat + "/cntPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_p = in_cnt_mat + "/cntPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv = in_cnt_mat + "/cntCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_conv_home = in_cnt_mat + "/cntCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwp_c = in_cnt_mat + "/cntCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_pwn_c = in_cnt_mat + "/cntCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwp_c = in_cnt_mat + "/cntCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
-    string filecontact_nwn_c = in_cnt_mat + "/cntCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys = in_cnt_mat + "cntPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_phys_home = in_cnt_mat + "cntPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_p = in_cnt_mat + "cntPpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_p = in_cnt_mat + "cntPpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_p = in_cnt_mat + "cntPnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_p = in_cnt_mat + "cntPnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv = in_cnt_mat + "cntCA.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_conv_home = in_cnt_mat + "cntCAH.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwp_c = in_cnt_mat + "cntCpwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_pwn_c = in_cnt_mat + "cntCpwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwp_c = in_cnt_mat + "cntCnwp.txt"; //The source of the contact data from AJ STudy (<1yrs)
+    string filecontact_nwn_c = in_cnt_mat + "cntCnwn.txt"; //The source of the contact data from AJ STudy (<1yrs)
 #endif
     
     

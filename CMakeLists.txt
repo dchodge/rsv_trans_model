@@ -23,7 +23,6 @@ add_executable(
 	src/main.cpp
 )
 
-
 target_link_libraries(
 	rsv_model 
 	boost_random 

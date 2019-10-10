@@ -9,6 +9,55 @@
 #ifndef cea_h
 #define cea_h
 
+struct cea_state_t
+{
+    // Empty vectors
+    num_vec S_tot; // total number of symptomatic infections
+    num_vec H_tot; // total number of hospitalised cases
+    num_vec D_tot; // total number of deaths
+    num_vec GP_tot;// total number of GP consultations
+    num_vec BD_tot;// total number of hospital bed days
+
+    num_vec doses_pal; // total number of doses of palivizumab
+    num_vec doses_pro; // total number of doses of prophylactics
+    double Q, CP, CT;
+    
+    int time_hor;
+    double disc;
+    
+    cea_state_t()
+    {
+        time_hor = 10;
+        disc = 0.035;
+
+        for (int i = 0; i < NoAgeG; i++)
+        {
+            S_tot.push_back(0); H_tot.push_back(0); D_tot.push_back(0);
+            GP_tot.push_back(0); BD_tot.push_back(0);
+        }
+
+        for (int i = 0; i < time_hor*52; i++)
+        {
+            doses_pal.push_back(0); doses_pro.push_back(0);
+        }
+        Q = CP = CT = 0;
+    }
+    
+    void cea_state_clear(cea_state_t& cea_state)
+    {
+        for (int i = 0; i < NoAgeG; i++)
+        {
+            cea_state.S_tot[i] = 0; cea_state.H_tot[i] = 0; cea_state.D_tot[i] = 0;
+            cea_state.GP_tot[i] = 0; cea_state.BD_tot[i] = 0;
+        }
+        for (int i = 0; i < time_hor*52; i++)
+        {
+            cea_state.doses_pal[i] = 0; cea_state.doses_pro[i] = 0;
+        }
+        cea_state.Q = cea_state.CP = cea_state.CT = 0;
+    }
+};
+
 
 double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& H_tot, num_vec& D_tot, int s)
 {
@@ -23,7 +72,7 @@ double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_
     // Keep track of totals
     for (int a = 0; a < NoAgeG; a++)
     {
-        S_tot[a] += S_a[a];H_tot[a] += H_a[a];D_tot[a] += D_a[a];
+        S_tot[a] += S_a[a]; H_tot[a] += H_a[a]; D_tot[a] += D_a[a];
     }
     
     double tot_Q = 0;
@@ -117,9 +166,6 @@ double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
     {
         GP_tot[a] += GP_a[a]; BD_tot[a] += BD_a[a];
     }
-    
-
-
     double tot_CT = 0;
     double GP_c = 37.4;
     
@@ -135,10 +181,10 @@ double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
     return tot_CT;
 }
 
-double get_CostP(double no_pal, double no_vac, double p_ad, vector2D& doses, int t_w, int s)
+double get_CostP(double no_pal, double no_vac, double p_ad, cea_state_t& cea_state, int t_w, int s)
 {
-    doses[0][t_w] = no_pal;
-    doses[1][t_w] = no_vac;
+    cea_state.doses_pal[t_w] = no_pal;
+    cea_state.doses_pro[t_w] = no_vac;
     return no_pal*57.5 + no_vac*p_ad;
 }
 

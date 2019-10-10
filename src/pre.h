@@ -31,7 +31,6 @@ typedef boost::mt19937 PRNG_s;
 PRNG_s rng(engine()); //Generate non-static random numbers (pick different numbers from prior distribution each run)
 //PRNG_s rng; //Generate non-static random numbers (pick different numbers from prior distribution each run)
 
-
 double const ageGroup_nv[] = {0.0, 1.0/12.0, 2.0/12.0, 3.0/12.0, 4.0/12.0, 5.0/12.0, 6.0/12.0, 7.0/12.0, 8.0/12.0, 9.0/12.0, 10.0/12.0, 11.0/12.0, 1.0, 2.0, 3.0, 4.0, 5.0, 10.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0};  //Lower age group limits (upper limit not needed)
 //{0.0, 0.5, 1.0, 5.0, 15.0, 45.0, 65.0};
 //{0.0, 1.0/12.0, 2.0/12.0, 3.0/12.0, 4.0/12.0, 5.0/12.0, 6.0/12.0, 7.0/12.0, 8.0/12.0, 9.0/12.0, 10.0/12.0, 11.0/12.0, 1.0, 2.0, 3.0, 4.0, 5.0, 15.0, 45.0, 65.0};  //Lower age group limits (upper limit not needed)
@@ -45,7 +44,7 @@ double ageGroupP[] = {0.0, 1.0/12.0, 2.0/12.0, 3.0/12.0, 4.0/12.0, 5.0/12.0, 6.0
 using namespace Eigen;
 
 /** ///////////////////////////////////////////////////////////////////////////////////
- ////////////////////////////// 5. Distributions //////////////////////////////
+ ////////////////////////////// 2. Distributions //////////////////////////////
  //////////////////////////////////////////////////////////////////////////////////// **/
 
 

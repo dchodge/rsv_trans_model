@@ -526,8 +526,8 @@ namespace sim_ouput
     /**********************************/
     /**    WRTIE INTERVENTION PROGRAMMES  **/
      /**********************************/
-    
-    num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, bool dir_ind, int s, double cov_c, num_vec& S_tot, num_vec& H_tot, num_vec& D_tot, num_vec& GP_tot, num_vec& BD_tot, vector2D& doses, double& Q, double& CT, double& CP, double p_cost, int time_hor, double disc, double om_mab, double xi_b)
+    //num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, bool dir_ind, int s, double cov_c, num_vec& S_tot, num_vec& H_tot, num_vec& D_tot, num_vec& GP_tot, num_vec& BD_tot, vector2D& doses, double& Q, double& CT, double& CP, double p_cost, int time_hor, double disc, double om_mab, double xi_b)
+    num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, bool dir_ind, int s, double cov_c, double p_cost, cea_state_t& cea_state, double om_mab, double xi_b)
     {
         VectorXd sample_post;
         asc::Euler integrator;
@@ -541,7 +541,7 @@ namespace sim_ouput
         
         num_vec inci_tot;
         num_vec inci_temp;
-        double r = disc;
+        double r = cea_state.disc;
         double t = ode_par.t_start;
         int t_d = 0;
         vector2D x_inc(52,vector<double>(NoAgeG*9,0));
@@ -587,9 +587,9 @@ namespace sim_ouput
                         x_pal_inc[t_w%52] = x_pal;
                         x_vac_inc[t_w%52] = x_vac;
 
-                        Q += get_QALY_2(inci_temp, mcmc_state, S_tot, GP_tot, H_tot, D_tot, s)*exp(-t_w*r/52.0);
-                        CT += get_CostT(inci_temp, GP_tot, BD_tot, s)*exp(-t_w*r/52.0);
-                        CP += get_CostP(x_pal, x_vac, p_cost, doses, t_w, s)*exp(-t_w*r/52.0);
+                        cea_state.Q += get_QALY_2(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
+                        cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
+                        cea_state.CP += get_CostP(x_pal, x_vac, p_cost, cea_state, t_w, s)*exp(-t_w*r/52.0);
                         t_w++;
                     }
                     for (int a = 0; a < NoAgeG; a++)
@@ -608,24 +608,24 @@ namespace sim_ouput
             }
         }
    // After equilibirum just use last year with an increasing t_w;
-        for (int t_w = 4*52; t_w  < (time_hor+1)*52; t_w++)
+        for (int t_w = 4*52; t_w  < (cea_state.time_hor+1)*52; t_w++)
         {
             inci_temp.clear();
             for (int a = 0; a < NoAgeG; a++)
                 for (int j = 0; j < 9; j++)
                     inci_temp.push_back(x_inc[(t_w)%52][9*a + j]);
             
-            if (t_w == (time_hor)*52)
+            if (t_w == (cea_state.time_hor)*52)
             {
                 for (int a = 0; a < NoAgeG; a++)
                 {
-                    S_tot[a] = 0; H_tot[a] = 0; D_tot[a] = 0;
-                    GP_tot[a] = 0; BD_tot[a] = 0;
+                    cea_state.S_tot[a] = 0; cea_state.H_tot[a] = 0; cea_state.D_tot[a] = 0;
+                    cea_state.GP_tot[a] = 0; cea_state.BD_tot[a] = 0;
                 }
             }
-            Q += get_QALY_2(inci_temp, mcmc_state, S_tot, GP_tot, H_tot, D_tot, s)*exp(-t_w*r/52.0);
-            CT += get_CostT(inci_temp, GP_tot, BD_tot, s)*exp(-t_w*r/52.0);
-            CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], p_cost, doses, t_w, s)*exp(-t_w*r/52.0);
+            cea_state.Q += get_QALY_2(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
+            cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
+            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], p_cost, cea_state, t_w, s)*exp(-t_w*r/52.0);
         }
   // Find the total annual incidences for the equilibirum year
         for (int a = 0; a < NoAgeG; a++)
@@ -660,27 +660,15 @@ namespace sim_ouput
         num_vec inciall;
         num_vec inci(25*9,0);
         num_vec incipri(25,0);
-        num_vec S_tot(NoAgeG, 0); num_vec H_tot(NoAgeG, 0); num_vec D_tot(NoAgeG, 0);
-        num_vec GP_tot(NoAgeG, 0); num_vec BD_tot(NoAgeG, 0);
-        vector2D doses(2,vector<double>(time_hor*52,0));
-        double Q, CP, CT;
+        
+        cea_state_t cea_state;
+        
         for (int s = 0; s < seed.size(); s++)
         {
             num_vec up_take_base = cal::gen_daily(cal::uprate[iN], cal::start_w[iN]);
             cal::Calendar_full cal(cal::t_group[iN], cal::cov[iN], up_take_base, cal::start_w[iN], cal::end_w[iN], cal::Pal_ind[iN], cal::cal_type[iN], s, eff_pal, mono_pal, vac_pal, mat_pal);
             
-            Q = CP = CT = 0;
-            for (int a = 0; a < NoAgeG; a++)
-            {
-                S_tot[a] = 0; H_tot[a] = 0; D_tot[a] = 0;
-                GP_tot[a] = 0; BD_tot[a] = 0;
-            }
-            for (int t = 0; t < time_hor*52; t++)
-            {
-                doses[0][t] = 0; doses[1][t] = 0;
-            }
-            
-            inciall = int_post(pars, mcmc_state, cal, false, seed[s], cov_c, S_tot, H_tot, D_tot, GP_tot, BD_tot, doses, Q, CP, CT, p_cost, time_hor, disc, om_mab, xi_b);
+            inciall = int_post(pars, mcmc_state, cal, false, seed[s], cov_c, p_cost, cea_state, om_mab, xi_b);
             for (int i = 0; i < 9*25; i++)
                 inci[i] = inciall[i];
             
@@ -689,16 +677,18 @@ namespace sim_ouput
             
             record_inc({(double)seed[s]}); record_inc.add(inci);
             record_inc_pri({(double)seed[s]}); record_inc_pri.add(incipri);
-            record_s({(double)seed[s]}); record_s.add(S_tot);
-            record_h({(double)seed[s]}); record_h.add(H_tot);
-            record_d({(double)seed[s]}); record_d.add(D_tot);
-            record_gp({(double)seed[s]}); record_gp.add(GP_tot);
-            record_bd({(double)seed[s]}); record_bd.add(BD_tot);
-            record_dose({(double)seed[s]}); record_dose.add(doses[0]);
-            record_dose({(double)seed[s]}); record_dose.add(doses[1]);
-            record_q({(double)seed[s]}); record_q.add(Q);
-            record_cp({(double)seed[s]}); record_cp.add(CP);
-            record_ct({(double)seed[s]}); record_ct.add(CT);
+            record_s({(double)seed[s]}); record_s.add(cea_state.S_tot);
+            record_h({(double)seed[s]}); record_h.add(cea_state.H_tot);
+            record_d({(double)seed[s]}); record_d.add(cea_state.D_tot);
+            record_gp({(double)seed[s]}); record_gp.add(cea_state.GP_tot);
+            record_bd({(double)seed[s]}); record_bd.add(cea_state.BD_tot);
+            record_dose({(double)seed[s]}); record_dose.add(cea_state.doses_pal);
+            record_dose({(double)seed[s]}); record_dose.add(cea_state.doses_pro);
+            record_q({(double)seed[s]}); record_q.add(cea_state.Q);
+            record_cp({(double)seed[s]}); record_cp.add(cea_state.CP);
+            record_ct({(double)seed[s]}); record_ct.add(cea_state.CT);
+            
+            cea_state.cea_state_clear(cea_state);
         }
         
         record_inc.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc", col_name);
@@ -717,16 +707,9 @@ namespace sim_ouput
         {
             num_vec up_take_base = cal::gen_daily(cal::uprate[iN], cal::start_w[iN]);
             cal::Calendar_full cal(cal::t_group[iN], cal::cov[iN], up_take_base, cal::start_w[iN], cal::end_w[iN], cal::Pal_ind[iN], cal::cal_type[iN], s, eff_pal, mono_pal, vac_pal, mat_pal );
-            
 
-            Q = CP = CT = 0;
-            for (int a = 0; a < NoAgeG; a++)
-            {
-                S_tot[a] = 0; H_tot[a] = 0; D_tot[a] = 0;
-                GP_tot[a] = 0; BD_tot[a] = 0;
-            }
-            
-            inciall = int_post(pars, mcmc_state, cal, true, seed[s], cov_c, S_tot, H_tot, D_tot, GP_tot, BD_tot, doses, Q, CP, CT, p_cost, time_hor, disc, om_mab, xi_b);
+            inciall = int_post(pars, mcmc_state, cal, false, seed[s], cov_c, p_cost, cea_state, om_mab, xi_b);
+
             for (int i = 0; i < 9*25; i++)
                 inci[i] = inciall[i];
             
@@ -736,17 +719,19 @@ namespace sim_ouput
             record_inc_d({(double)seed[s]}); record_inc_d.add(inci);
             record_inc_d_pri({(double)seed[s]}); record_inc_d_pri.add(incipri);
             
-            record_s_d({(double)seed[s]}); record_s_d.add(S_tot);
-            record_h_d({(double)seed[s]}); record_h_d.add(H_tot);
-            record_d_d({(double)seed[s]}); record_d_d.add(D_tot);
-            record_gp_d({(double)seed[s]}); record_gp_d.add(GP_tot);
-            record_bd_d({(double)seed[s]}); record_bd_d.add(BD_tot);
-            record_dose_d({(double)seed[s]}); record_dose_d.add(doses[0]);
-            record_dose_d({(double)seed[s]}); record_dose_d.add(doses[1]);
+            record_s_d({(double)seed[s]}); record_s_d.add(cea_state.S_tot);
+            record_h_d({(double)seed[s]}); record_h_d.add(cea_state.H_tot);
+            record_d_d({(double)seed[s]}); record_d_d.add(cea_state.D_tot);
+            record_gp_d({(double)seed[s]}); record_gp_d.add(cea_state.GP_tot);
+            record_bd_d({(double)seed[s]}); record_bd_d.add(cea_state.BD_tot);
+            record_dose_d({(double)seed[s]}); record_dose_d.add(cea_state.doses_pal);
+            record_dose_d({(double)seed[s]}); record_dose_d.add(cea_state.doses_pro);
 
-            record_q_d({(double)seed[s]}); record_q_d.add(Q);
-            record_cp_d({(double)seed[s]}); record_cp_d.add(CP);
-            record_ct_d({(double)seed[s]}); record_ct_d.add(CT);
+            record_q_d({(double)seed[s]}); record_q_d.add(cea_state.Q);
+            record_cp_d({(double)seed[s]}); record_cp_d.add(cea_state.CP);
+            record_ct_d({(double)seed[s]}); record_ct_d.add(cea_state.CT);
+            
+            cea_state.cea_state_clear(cea_state);
         }
         
         record_inc_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc_d", col_name);

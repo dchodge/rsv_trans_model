@@ -20,10 +20,14 @@ struct cea_state_t
 
     num_vec doses_pal; // total number of doses of palivizumab
     num_vec doses_pro; // total number of doses of prophylactics
-    double Q, CP, CT;
     
-    int time_hor;
-    double disc;
+    num_vec inci; // incidence in each age group, maternal group and risk group at equilibirum year
+    num_vec inci_pri; // incidence of primary incidence in each year group
+
+    double Q, CP, CT; // Total QALY loss, cost of purchasing, cost of administration
+    
+    int time_hor;   // time horizon
+    double disc;    // discounting
     
     cea_state_t()
     {
@@ -34,12 +38,17 @@ struct cea_state_t
         {
             S_tot.push_back(0); H_tot.push_back(0); D_tot.push_back(0);
             GP_tot.push_back(0); BD_tot.push_back(0);
+            inci_pri.push_back(0);
         }
-
         for (int i = 0; i < time_hor*52; i++)
         {
             doses_pal.push_back(0); doses_pro.push_back(0);
         }
+        for (int i = 0; i < NoAgeG*9; i++)
+        {
+            inci.push_back(0);
+        }
+        
         Q = CP = CT = 0;
     }
     
@@ -48,12 +57,17 @@ struct cea_state_t
         for (int i = 0; i < NoAgeG; i++)
         {
             cea_state.S_tot[i] = 0; cea_state.H_tot[i] = 0; cea_state.D_tot[i] = 0;
-            cea_state.GP_tot[i] = 0; cea_state.BD_tot[i] = 0;
+            cea_state.GP_tot[i] = 0; cea_state.BD_tot[i] = 0; cea_state.inci_pri[i] = 0;
         }
         for (int i = 0; i < time_hor*52; i++)
         {
             cea_state.doses_pal[i] = 0; cea_state.doses_pro[i] = 0;
         }
+        for (int i = 0; i < time_hor*52; i++)
+        {
+            cea_state.inci[i] = 0;
+        }
+        
         cea_state.Q = cea_state.CP = cea_state.CT = 0;
     }
 };

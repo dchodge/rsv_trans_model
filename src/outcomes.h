@@ -602,8 +602,6 @@ num_vec get_S(num_vec annual_inc, amh::amh_state_t& mcmc_state, int s1)
 
 num_vec get_H(num_vec annual_inc, int s)
 {
-
-    
     PRNG_s rng(s);
 
     num_vec h_tot(NoAgeG,0);

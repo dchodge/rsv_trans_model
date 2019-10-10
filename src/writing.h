@@ -513,7 +513,7 @@ namespace sim_ouput
     /**    WRTIE INTERVENTION PROGRAMMES  **/
      /**********************************/
 
-    num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, cal::inter_data_t inter_data, cea_state_t& cea_state, int s, int iN, bool dir_ind)
+    void int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, cal::inter_data_t& inter_data, cea_state_t& cea_state, int s, int iN, bool dir_ind)
     {
         VectorXd sample_post;
         asc::Euler integrator;
@@ -543,7 +543,6 @@ namespace sim_ouput
         
         double x_inc_annual, x_pri_annual;
         int t_w = 0;
-   
     // Run model until equilibrium
         while (t < ode_par.t_end)
         {
@@ -616,6 +615,7 @@ namespace sim_ouput
             cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
             cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
         }
+        
   // Find the total annual incidences for the equilibirum year
         for (int a = 0; a < NoAgeG; a++)
         {
@@ -626,46 +626,41 @@ namespace sim_ouput
                 {
                     x_inc_annual += x_inc[t_t][9*a + j];
                 }
-                inci_tot.push_back(x_inc_annual);
+                cea_state.inci[a*9 + j] = x_inc_annual;
             }
+
         }
+
         for (int a = 0; a < NoAgeG; a++)
         {
             x_pri_annual = 0;
             for (int t_t = 0; t_t < 52; t_t++)
                 x_pri_annual += x_pri[t_t][a];
 
-            inci_tot.push_back(x_pri_annual);
+            cea_state.inci_pri[a] = x_pri_annual;
         }
-        return inci_tot;
     }
     
-    void write_interventions(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t& inter_data, num_vec seed, int iN)
+    void write_interventions(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t inter_data, num_vec seed, int iN)
     {
         asc::Recorder record_inc, record_inc_pri, record_s, record_h, record_d, record_gp, record_bd, record_dose, record_q, record_cp, record_ct;
         asc::Recorder record_inc_d, record_inc_d_pri, record_s_d, record_h_d, record_d_d, record_gp_d, record_bd_d, record_dose_d, record_q_d, record_cp_d, record_ct_d;
         
         str_vec col_name = {"seed", "<1 mo", "1 mo", "2 mo", "3 mo", "4 mo", "5 mo", "6 mo", "7 mo", "8 mo", "9 mo", "10 mo", "11 mo", "1 yr", "2 yr", "3 yr", "4 yr", "5-9yrs", "10-14 yrs", "15-24 yrs", "25-34 yrs", "35-44 yrs", "44-54 yrs", "55-64yrs", "65-74yrs", "75yrs+"};
-        num_vec inciall;
-        num_vec inci(25*9,0);
-        num_vec incipri(25,0);
-        
-        cea_state_t cea_state;
         
         for (int s = 0; s < seed.size(); s++)
         {
+            cea_state_t cea_state;
+            
             num_vec up_take_base = cal::gen_daily(inter_data.uprate[iN], inter_data.start_w[iN]);
+            inter_data.rate = up_take_base;
             cal::Calendar_full cal(inter_data, s, iN);
-            
-            inciall = int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, false);
-            for (int i = 0; i < 9*25; i++)
-                inci[i] = inciall[i];
-            
-            for (int i = 0; i < 25; i++)
-                incipri[i] = inciall[i + 25*9];
-            
-            record_inc({(double)seed[s]}); record_inc.add(inci);
-            record_inc_pri({(double)seed[s]}); record_inc_pri.add(incipri);
+            cout << "HEy?" << endl;
+            int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, false);
+            cout << "Hey??" << endl;
+
+            record_inc({(double)seed[s]}); record_inc.add(cea_state.inci);
+            record_inc_pri({(double)seed[s]}); record_inc_pri.add(cea_state.inci_pri);
             record_s({(double)seed[s]}); record_s.add(cea_state.S_tot);
             record_h({(double)seed[s]}); record_h.add(cea_state.H_tot);
             record_d({(double)seed[s]}); record_d.add(cea_state.D_tot);
@@ -676,8 +671,7 @@ namespace sim_ouput
             record_q({(double)seed[s]}); record_q.add(cea_state.Q);
             record_cp({(double)seed[s]}); record_cp.add(cea_state.CP);
             record_ct({(double)seed[s]}); record_ct.add(cea_state.CT);
-            
-            cea_state.cea_state_clear(cea_state);
+
         }
         
         record_inc.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "inc", col_name);
@@ -694,20 +688,16 @@ namespace sim_ouput
 
         for (int s = 0; s < seed.size(); s++)
         {
+            cea_state_t cea_state;
+
             num_vec up_take_base = cal::gen_daily(inter_data.uprate[iN], inter_data.start_w[iN]);
+            inter_data.rate = up_take_base;
             cal::Calendar_full cal(inter_data, s, iN);
 
-            inciall = int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, true);
-
-            for (int i = 0; i < 9*25; i++)
-                inci[i] = inciall[i];
+            int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, true);
             
-            for (int i = 0; i < 25; i++)
-                incipri[i] = inciall[i + 25*9];
-            
-            record_inc_d({(double)seed[s]}); record_inc_d.add(inci);
-            record_inc_d_pri({(double)seed[s]}); record_inc_d_pri.add(incipri);
-            
+            record_inc_d({(double)seed[s]}); record_inc_d.add(cea_state.inci);
+            record_inc_d_pri({(double)seed[s]}); record_inc_d_pri.add(cea_state.inci_pri);
             record_s_d({(double)seed[s]}); record_s_d.add(cea_state.S_tot);
             record_h_d({(double)seed[s]}); record_h_d.add(cea_state.H_tot);
             record_d_d({(double)seed[s]}); record_d_d.add(cea_state.D_tot);
@@ -715,12 +705,10 @@ namespace sim_ouput
             record_bd_d({(double)seed[s]}); record_bd_d.add(cea_state.BD_tot);
             record_dose_d({(double)seed[s]}); record_dose_d.add(cea_state.doses_pal);
             record_dose_d({(double)seed[s]}); record_dose_d.add(cea_state.doses_pro);
-
             record_q_d({(double)seed[s]}); record_q_d.add(cea_state.Q);
             record_cp_d({(double)seed[s]}); record_cp_d.add(cea_state.CP);
             record_ct_d({(double)seed[s]}); record_ct_d.add(cea_state.CT);
             
-            cea_state.cea_state_clear(cea_state);
         }
         
         record_inc_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "inc_d", col_name);

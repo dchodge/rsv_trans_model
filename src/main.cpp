@@ -128,13 +128,13 @@ void posterior_inc(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_sta
 // FUNC3:"find_optimal_week" -> Determine the optimal month for seasonal programmes to begin
 // Arg:"pars" -> class of the current parameter values
 // Arg:"mcmc_state" -> class of the current mcmc state
+// Arg:"inter_data" -> structure of the intervention data
 // Arg:"seed" -> seed vector
-void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t& inter_data, num_vec seed)
+void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t inter_data, num_vec seed)
 {
     asc::Recorder recorder; // record the values (in ascent package)
     num_vec ind_s = {0, 2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14};
     str_vec sea_name = {"P_","P1_","P2_","P3_","P4_","P5_","P6_","P8_","P10_","P11_","P12_","P13_","P14_"};
-    cea_state_t cea_state;
     int s = 0;
     num_vec tot_incp(12,0);
     
@@ -142,6 +142,8 @@ void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state,
     {
         for (int i = 0; i < 12 ; i++)
         {
+            cea_state_t cea_state;
+
             num_vec up_take_base = cal::gen_daily(inter_data.uprate[ind_s[i]], w);
             inter_data.rate = up_take_base;
             inter_data.start_w[ind_s[i]] = w;
@@ -149,11 +151,10 @@ void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state,
 
             cal::Calendar_full cal(inter_data, s, ind_s[i]);
             
-            num_vec inciall = sim_ouput::int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], ind_s[i], false);
+            sim_ouput::int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], ind_s[i], false);
 
             tot_incp[i] = cea_state.Q;
             cout << "Starting week number: " << w << ". Programme: " << sea_name[i] << ". Total QALY loss: " << tot_incp[i] << endl;
-            cea_state.cea_state_clear(cea_state);
         }
         recorder({(double)w});
         recorder.add(tot_incp);
@@ -165,8 +166,9 @@ void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state,
 // Arg:"paramFit" -> parameters to calibrate
 // Arg:"mcmc_state" -> class of the current mcmc state
 // Arg:"pars" -> class of the current parameter values
+// Arg:"inter_data" -> structure of the intervention data
 // Arg:"seed" -> seed vector
-void intervention_p(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, cal::inter_data_t& inter_data, num_vec seed)
+void intervention_p(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, cal::inter_data_t inter_data, num_vec seed)
 {
     // Intervention programme characteristics
     for (int i = 0; i < 16; i++)
@@ -180,8 +182,9 @@ void intervention_p(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_st
 // Arg:"paramFit" -> parameters to calibrate
 // Arg:"mcmc_state" -> class of the current mcmc state
 // Arg:"pars" -> class of the current parameter values
+// Arg:"inter_data" -> structure of the intervention data
 // Arg:"seed" -> seed vector
-void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, cal::inter_data_t& inter_data, num_vec seed)
+void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, cal::inter_data_t inter_data, num_vec seed)
 {
     // Intervention programme characteristics
     num_vec ind_s1 = {0, 1, 2, 3, 4, 5, 6};
@@ -263,7 +266,7 @@ int main(int argc, const char * argv[]) {
     inter_data.get_eff(inter_data, seed.size());
     
     // FUNC3:"find_optimal_week" -> Determine the optimal month for seasonal programmes to begin
-    //find_optimal_week(pars, mcmc_state, inter_data, seed);
+    find_optimal_week(pars, mcmc_state, inter_data, seed);
     
 /**********************************/
 /**     4. COMPARE CONSISTENCY (other file)         **/
@@ -281,6 +284,6 @@ int main(int argc, const char * argv[]) {
     // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
     // FUNC5b:"intervention_p_SA" -> Run the simualtions for the sensitivtiy analysis
 
-    intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
+    //intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
     //intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
 }

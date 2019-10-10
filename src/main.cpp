@@ -234,9 +234,8 @@ int main(int argc, const char * argv[]) {
     //parallel_temp_mcmc(paramFitA, 25000, 50000, 100, 20, 12, 'A');
     
 /**********************************/
-/**      IMPORT POSTERIORS FOR REMAINING FUNCTIONS **/
+/**      2. EVALUATE MODEL FIT        **/
 /**********************************/
-    
     // IMPORT POSTERIORS FROM CALIBRATION IN MCMC
     param::param_state_t pars(paramFitA);
     amh::amh_state_t mcmc_state(25000, 50000, 100, 20);
@@ -251,9 +250,6 @@ int main(int argc, const char * argv[]) {
     for (int s = 0; s < 10; s++)
         seed.push_back(uniform_dist_disc(0, mcmc_state.NK2-1, 'r'));
     
-/**********************************/
-/**      2. EVALUATE MODEL FIT        **/
-/**********************************/
     // DETERMINE INCIDENCE SAMPLES FROM POSTERIOR, R0/REFF VALUES AND INCIDENCE
     // FUNC2:"posterior_inc -> Determine incidence from posterior samples
    // posterior_inc(paramFitA, mcmc_state, pars, seed);
@@ -261,7 +257,7 @@ int main(int argc, const char * argv[]) {
 /**********************************/
 /**     3. FIND OPTIMAL WEEK            **/
 /**********************************/
-    // Get intervention programme characteristics
+    // GET INTERVENTION PROGRAMME CHARACTERISTICS
     cal::inter_data_t inter_data;
     inter_data.get_eff(inter_data, seed.size());
     

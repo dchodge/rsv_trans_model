@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(EXECUTABLE_OUTPUT_PATH exe)
+
 include_directories(
 	headers 
 )
@@ -24,6 +26,6 @@ add_executable(
 )
 
 target_link_libraries(
-	rsv_model 
+	rsv_model
 	boost_random 
 )

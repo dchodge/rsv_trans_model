@@ -349,28 +349,23 @@ namespace sim_ouput
         recorder.csv(get_ll::dout + "soln/" + "foi_" + "All", {"Foi", "value"});
     }
     
-    void write_foi_mat(param::param_state_t& pars, amh::amh_state_t& mcmc_state, int i, double om_mab, double xi_b)
+    void write_foi_mat(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t& inter_data, int s)
     {
         VectorXd sample_post;
         asc::Recorder recorder1, recorder2;
         asc::Euler integrator;
-        
-        VectorXd eff_pal = cal::get_eff(10, 1);
-        VectorXd eff_mab =  cal::get_eff(10, 2);
-        VectorXd eff_vac =  cal::get_eff(10, 3);
-        VectorXd eff_mat =  cal::get_eff(10, 4);
-        
+
         get_ll::ODE_dynamics ode_par(0.0, 0.0, 365*3, 1.0);
         
-        sample_post = mcmc_state.posterior.row(i).transpose();
+        sample_post = mcmc_state.posterior.row(s).transpose();
         update(pars, sample_post);
         
-        cal::Calendar_full cal(cal::G_base, 0.0, {0}, 0, 0, true, "None", i, eff_pal, eff_mab, eff_vac, eff_mat);
-        interventions::ODE_Desc_inter ODE_desc_int_inst(pars, cal, false, 0.6, om_mab, xi_b);
+        cal::Calendar_full cal(inter_data, s, 0);
+        interventions::ODE_Desc_inter ODE_desc_int_inst(pars, cal, false, 0.6, inter_data.om_mab, inter_data.xi_b);
         num_vec x01 = interventions::initial_cond(pars, 0.6);
         
-        cal::Calendar_full cal_mat(cal::G_par, 0.6, {0}, 48, 48+21, true, "mat", i, eff_pal, eff_mab, eff_vac, eff_mat);
-        interventions::ODE_Desc_inter ODE_desc_int_inst_mat(pars, cal_mat, false, 0.6, om_mab, xi_b);
+        cal::Calendar_full cal_mat(inter_data, s, 7);
+        interventions::ODE_Desc_inter ODE_desc_int_inst_mat(pars, cal_mat, false, 0.6, inter_data.om_mab, inter_data.xi_b);
         num_vec x02 = interventions::initial_cond(pars, 0.6);
         
         num_vec inci_tot;
@@ -455,17 +450,10 @@ namespace sim_ouput
     }
     
     
-    void consistency_checks(param::param_state_t& pars, amh::amh_state_t& mcmc_state, int s, double om_mab, double xi_b)
+    void consistency_checks(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t& inter_data, int s)
     {
-        VectorXd eff_pal = cal::get_eff(10, 1);
-        VectorXd eff_mab =  cal::get_eff(10, 2);
-        VectorXd eff_vac =  cal::get_eff(10, 3);
-        VectorXd eff_mat =  cal::get_eff(10, 4);
-
-        //cal::Calendar_full cal(cal::G_base, 0.0, {0}, 0, 0, false, "None", s, eff_pal, eff_mab, eff_vac, eff_mat);
-        
-        cal::Calendar_full cal_mab(cal::G_0mo, 0.0, {0}, 0, 0, true, "None", s, eff_pal, eff_mab, eff_vac, eff_mat);
-        cal::Calendar_full cal_mab_2(cal::G_0mo, 0.9, {0}, 12, 12+21, false, "Mlr_p", s, eff_pal, eff_mab, eff_vac, eff_mat);
+        cal::Calendar_full cal_mab(inter_data, s, 0);
+        cal::Calendar_full cal_mab_2(inter_data, s, 4);
 
         EulerT<state_t> get_newInf;
         SystemT<state_t, system_t> System;
@@ -481,10 +469,8 @@ namespace sim_ouput
         
         get_ll::ODE_desc ODE_desc_inst(pars);
         get_ll::ODE_desc_par ODE_desc_par_inst(pars);
-        interventions::ODE_Desc_inter ODE_desc_int_inst_m1(pars, cal_mab, false, 0.0, om_mab, xi_b);
-        interventions::ODE_Desc_inter ODE_desc_int_inst_m2(pars, cal_mab_2, false, 0.0, om_mab, xi_b);
-        //interventions::ODE_Desc_inter ODE_desc_int_inst(pars, cal, false, 0.6, om_mab, xi_b);
-        //interventions::ODE_Desc_inter ODE_desc_int_inst_mat(pars, cal_mat, false, 0.6, om_mab, xi_b);
+        interventions::ODE_Desc_inter ODE_desc_int_inst_m1(pars, cal_mab, false, 0.0, inter_data.om_mab, inter_data.xi_b);
+        interventions::ODE_Desc_inter ODE_desc_int_inst_m2(pars, cal_mab_2, false, 0.0, inter_data.om_mab, inter_data.xi_b);
 
         num_vec x01 = get_ll::init_cond(pars);
         num_vec x02 = init_cond_par(pars);
@@ -526,16 +512,19 @@ namespace sim_ouput
     /**********************************/
     /**    WRTIE INTERVENTION PROGRAMMES  **/
      /**********************************/
-    //num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, bool dir_ind, int s, double cov_c, num_vec& S_tot, num_vec& H_tot, num_vec& D_tot, num_vec& GP_tot, num_vec& BD_tot, vector2D& doses, double& Q, double& CT, double& CP, double p_cost, int time_hor, double disc, double om_mab, double xi_b)
-    num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, bool dir_ind, int s, double cov_c, double p_cost, cea_state_t& cea_state, double om_mab, double xi_b)
+
+    num_vec int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, cal::inter_data_t inter_data, cea_state_t& cea_state, int s, int iN, bool dir_ind)
     {
         VectorXd sample_post;
         asc::Euler integrator;
         get_ll::ODE_dynamics ode_par(0.0, 365.0*1, 365.0*4, 1.0);
-        
         sample_post = mcmc_state.posterior.row(s).transpose();
         update(pars, sample_post);
-        
+                
+        double cov_c = inter_data.cov_c[iN];
+        double om_mab = inter_data.om_mab;
+        double xi_b = inter_data.xi_b;
+
         interventions::ODE_Desc_inter ODE_desc_inst(pars, cal, dir_ind, cov_c, om_mab, xi_b);
         num_vec x0 = interventions::initial_cond(pars, cov_c);
         
@@ -589,7 +578,7 @@ namespace sim_ouput
 
                         cea_state.Q += get_QALY_2(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
                         cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
-                        cea_state.CP += get_CostP(x_pal, x_vac, p_cost, cea_state, t_w, s)*exp(-t_w*r/52.0);
+                        cea_state.CP += get_CostP(x_pal, x_vac, inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
                         t_w++;
                     }
                     for (int a = 0; a < NoAgeG; a++)
@@ -625,7 +614,7 @@ namespace sim_ouput
             }
             cea_state.Q += get_QALY_2(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
             cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
-            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], p_cost, cea_state, t_w, s)*exp(-t_w*r/52.0);
+            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
         }
   // Find the total annual incidences for the equilibirum year
         for (int a = 0; a < NoAgeG; a++)
@@ -650,8 +639,8 @@ namespace sim_ouput
         }
         return inci_tot;
     }
-        
-    void write_interventions(param::param_state_t& pars, amh::amh_state_t& mcmc_state, string prog_no, string prog_name, num_vec seed, double cov_c, double p_cost, int time_hor, VectorXd eff_pal, VectorXd mono_pal, VectorXd vac_pal, VectorXd mat_pal, int iN, double disc, double om_mab, double xi_b)
+    
+    void write_interventions(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t& inter_data, num_vec seed, int iN)
     {
         asc::Recorder record_inc, record_inc_pri, record_s, record_h, record_d, record_gp, record_bd, record_dose, record_q, record_cp, record_ct;
         asc::Recorder record_inc_d, record_inc_d_pri, record_s_d, record_h_d, record_d_d, record_gp_d, record_bd_d, record_dose_d, record_q_d, record_cp_d, record_ct_d;
@@ -665,10 +654,10 @@ namespace sim_ouput
         
         for (int s = 0; s < seed.size(); s++)
         {
-            num_vec up_take_base = cal::gen_daily(cal::uprate[iN], cal::start_w[iN]);
-            cal::Calendar_full cal(cal::t_group[iN], cal::cov[iN], up_take_base, cal::start_w[iN], cal::end_w[iN], cal::Pal_ind[iN], cal::cal_type[iN], s, eff_pal, mono_pal, vac_pal, mat_pal);
+            num_vec up_take_base = cal::gen_daily(inter_data.uprate[iN], inter_data.start_w[iN]);
+            cal::Calendar_full cal(inter_data, s, iN);
             
-            inciall = int_post(pars, mcmc_state, cal, false, seed[s], cov_c, p_cost, cea_state, om_mab, xi_b);
+            inciall = int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, false);
             for (int i = 0; i < 9*25; i++)
                 inci[i] = inciall[i];
             
@@ -691,24 +680,24 @@ namespace sim_ouput
             cea_state.cea_state_clear(cea_state);
         }
         
-        record_inc.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc", col_name);
-        record_inc_pri.csv(get_ll::dout + "inter/" + prog_no + "/" + "incpri", col_name);
-        record_s.csv(get_ll::dout + "inter/" + prog_no + "/" + "symp", col_name);
-        record_h.csv(get_ll::dout + "inter/" + prog_no + "/" + "hosp", col_name);
-        record_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "death", col_name);
-        record_gp.csv(get_ll::dout + "inter/" + prog_no + "/" + "gp", col_name);
-        record_bd.csv(get_ll::dout + "inter/" + prog_no + "/" + "bd", col_name);
-        record_dose.csv(get_ll::dout + "inter/" + prog_no + "/" + "no_doses",  {"seed", "Total numver of doses"});
-        record_q.csv(get_ll::dout + "inter/" + prog_no + "/" + "qaly", {"seed", "Total QALY"});
-        record_cp.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_pro",  {"seed", "Total Cost T"});
-        record_ct.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_tre",  {"seed", "Total Cost T"});
+        record_inc.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "inc", col_name);
+        record_inc_pri.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "incpri", col_name);
+        record_s.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "symp", col_name);
+        record_h.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "hosp", col_name);
+        record_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "death", col_name);
+        record_gp.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "gp", col_name);
+        record_bd.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "bd", col_name);
+        record_dose.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "no_doses",  {"seed", "Total numver of doses"});
+        record_q.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "qaly", {"seed", "Total QALY"});
+        record_cp.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "cost_pro",  {"seed", "Total Cost T"});
+        record_ct.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "cost_tre",  {"seed", "Total Cost T"});
 
         for (int s = 0; s < seed.size(); s++)
         {
-            num_vec up_take_base = cal::gen_daily(cal::uprate[iN], cal::start_w[iN]);
-            cal::Calendar_full cal(cal::t_group[iN], cal::cov[iN], up_take_base, cal::start_w[iN], cal::end_w[iN], cal::Pal_ind[iN], cal::cal_type[iN], s, eff_pal, mono_pal, vac_pal, mat_pal );
+            num_vec up_take_base = cal::gen_daily(inter_data.uprate[iN], inter_data.start_w[iN]);
+            cal::Calendar_full cal(inter_data, s, iN);
 
-            inciall = int_post(pars, mcmc_state, cal, false, seed[s], cov_c, p_cost, cea_state, om_mab, xi_b);
+            inciall = int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, true);
 
             for (int i = 0; i < 9*25; i++)
                 inci[i] = inciall[i];
@@ -734,17 +723,17 @@ namespace sim_ouput
             cea_state.cea_state_clear(cea_state);
         }
         
-        record_inc_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc_d", col_name);
-        record_inc_d_pri.csv(get_ll::dout + "inter/" + prog_no + "/" + "inc_pri_d", col_name);
-        record_s_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "symp_d", col_name);
-        record_h_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "hosp_d", col_name);
-        record_d_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "death_d", col_name);
-        record_gp_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "gp_d", col_name);
-        record_bd_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "bd_d", col_name);
-        record_dose_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "no_doses_d",  {"seed", "Total numver of doses"});
-        record_q_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "qaly_d", {"seed", "Total QALY"});
-        record_cp_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_pro_d", {"seed", "Total Cost T"});
-        record_ct_d.csv(get_ll::dout + "inter/" + prog_no + "/" + "cost_tre_d", {"seed", "Total Cost T"});
+        record_inc_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "inc_d", col_name);
+        record_inc_d_pri.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "inc_pri_d", col_name);
+        record_s_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "symp_d", col_name);
+        record_h_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "hosp_d", col_name);
+        record_d_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "death_d", col_name);
+        record_gp_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "gp_d", col_name);
+        record_bd_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "bd_d", col_name);
+        record_dose_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "no_doses_d",  {"seed", "Total numver of doses"});
+        record_q_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "qaly_d", {"seed", "Total QALY"});
+        record_cp_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "cost_pro_d", {"seed", "Total Cost T"});
+        record_ct_d.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "cost_tre_d", {"seed", "Total Cost T"});
     }
 }
 

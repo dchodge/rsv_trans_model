@@ -202,54 +202,5 @@ namespace CEA{
     vector2D getData;
     
     };
-    
-   /* vector2D CSVReader::getData()
-    {
-        std::ifstream file(FileName);
-        vector2D dataList;
-        std::string line = "";
-        
-        while (getline(file, line))
-        {
-            num_vec vec;
-            boost::algorithm::split(vec, line, boost::is_any_of(delimeter));
-            dataList.push_back(vec);
-        }
-        file.close();
-        
-        return dataList;
-    }
-    string PBQ_f = get_ll::dout + get_ll::calout_name + "inter/P_/qaly.csv"; //The source of the contact data from AJ STudy (<1yrs)
-    CSVReader reader(PBQ_f);
-    vector2D dataList = reader.getData();
-    for (num_vec vec : dataList)
-    {
-        for(double data : vec)
-        {
-            cout << data << ",";
-        }
-        cout << endl;
-    }*/
-    
-    
-   // vector2D const PBQ = get_2d(PBQ_f, 2, 52*10);
-
-    
-    
-   /* double get_incQALY(double )
-    {
-        
-    }
-    
-    double get_ppd_pal(double )
-    {
-        
-    }
-
-    double get_ppd_int(double )
-    {
-        
-    }*/
-
 };
 #endif /* cea_h */

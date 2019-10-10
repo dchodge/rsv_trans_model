@@ -342,7 +342,7 @@ namespace manip_contact {
 
 namespace cal
 {
-    ///Targeted groups
+    // Indicator function for target groups with age (25 age groups)
     num_vec G_base = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     num_vec G_0mo = {1.0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     num_vec G_plus = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -355,59 +355,83 @@ namespace cal
     num_vec G_65_ = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 1.0, 1.0};
     num_vec G_75_ = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 1.0};
     
-    ///Uptake rates, formed over 5 months from PHE '18-19, base case Sep-Feb
-    //    Sep,Oct,     Nov,    Dec,    Jan,    Feb, Mar, Apr, May, Jun
-    num_vec up_week_o65 = {0., 0.046, 0.177, 0.311, 0.444, 0.64, 0.737, 0.802, 0.856, 0.894, 0.920, 0.941, 0.953, 0.967, 0.978, 0.980, 0.986, 0.988, 0.988, 0.996, 1.};
-    num_vec up_week_u65 = {0., 0.031, 0.075, 0.16, 0.274, 0.387, 0.491, 0.579, 0.664, 0.726, 0.783, 0.830, 0.868, 0.906, 0.931, 0.953, 0.953, 0.965, 0.981, 0.987, 1.};
-    num_vec up_week_2t3 = {0., 0.000, 0.000, 0.00, 0.040, 0.120, 0.227, 0.369, 0.511, 0.629, 0.719, 0.809, 0.868, 0.910, 0.941, 0.965, 0.969, 0.976, 0.990, 0.993, 1.};
-    num_vec up_week_preg ={0., 0.041, 0.095, 0.192, 0.32, 0.451, 0.568, 0.664, 0.734, 0.794, 0.843, 0.881, 0.917, 0.934, 0.944, 0.967, 0.974, 0.973, 0.983, 0.990, 1.};
-    str_vec const prog_no =   {"P_",   "P0_", "P1_",   "P2_",  "P3_",  "P4_",  "P5_",  "P6_",  "P7_",  "P8_",  "P9_","P10_", "P11_", "P12_", "P13_", "P14_"};
-    str_vec const prog_no_SA_1 =   {"PA_", "P0A_", "P1A_", "P2A_",  "P3A_",  "P4A_",  "P5A_"};
-    str_vec const prog_no_SA_2 =   {"PB_", "P0B_", "P1B_", "P2B_",  "P3B_",  "P4B_",  "P5B_"};
-    str_vec const prog_no_SA_3 =   {"PC_", "P0C_", "P1C_", "P2C_",  "P3C_",  "P4C_", "P5C_","P6C_",  "P7C_"};
-
-
-
-    str_vec const prog_name = {"Base_","Pal_","mABVHR_","mABHR_","mABHR_","mAB_","mAB_","matS_","matA_","infS_"  ,"infA_"  ,"Pre"    ,"Sch1_" ,"Sch2_"  ,"Eld1_"   ,"Eld2_"};
-    //Intervention calendar generation for each programme
-    str_vec const cal_type = {"None", "None", "Mvhr", "Mhr", "Mhr_p", "Mlr", "Mlr_p", "mat", "mat", "LAV_inf", "LAV_inf", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald"};
-    vector2D const t_group = {cal::G_base, cal::G_base, cal::G_base, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_par, cal::G_par, cal::G_2mo, cal::G_2mo, cal::G_2_4, cal::G_5_10, cal::G_5_14, cal::G_75_, cal::G_65_};
-    //pal cost = 57.5
-    num_vec const c_ad =   {0, 0, 11.5,11.5, 11.5, 11.5, 11.5,       9, 9, 9, 9, 9, 9, 9, 9, 9};
+    // Proportion of total coverage achieved by month i for
+    num_vec up_week_o65 = {0., 0.046, 0.177, 0.311, 0.444, 0.64, 0.737, 0.802, 0.856, 0.894, 0.920, 0.941, 0.953, 0.967, 0.978, 0.980, 0.986, 0.988, 0.988, 0.996, 1.}; //over 65
+    num_vec up_week_u65 = {0., 0.031, 0.075, 0.16, 0.274, 0.387, 0.491, 0.579, 0.664, 0.726, 0.783, 0.830, 0.868, 0.906, 0.931, 0.953, 0.953, 0.965, 0.981, 0.987, 1.}; //under 65
+    num_vec up_week_2t3 = {0., 0.000, 0.000, 0.00, 0.040, 0.120, 0.227, 0.369, 0.511, 0.629, 0.719, 0.809, 0.868, 0.910, 0.941, 0.965, 0.969, 0.976, 0.990, 0.993, 1.}; //2-3 year olds
+    num_vec up_week_preg ={0., 0.041, 0.095, 0.192, 0.32, 0.451, 0.568, 0.664, 0.734, 0.794, 0.843, 0.881, 0.917, 0.934, 0.944, 0.967, 0.974, 0.973, 0.983, 0.990, 1.}; //pregnant women
     
-    vector2D const uprate = {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, cal::up_week_2t3, cal::up_week_u65, cal::up_week_u65, cal::up_week_o65, cal::up_week_o65};
-    num_vec const cov     = {0.0, 0.9, 0.9,0.9, 0.9, 0.9, 0.9, 0.6, 0.6, 0.9, 0.9, 0.45, 0.6, 0.6, 0.7, 0.7};
-    num_vec const cov_c     = {0.0, 0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.6, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    num_vec const start_w = {0.0,  16, 16, 12,  12,    12,   12,       0,    0,  4,    0,    16,    16,    16,    16,     16};  //optimal week (21 weeks long)
-    num_vec const end_w   = {0.0,  37, 37, 12+21, 12+21, 12+21, 12+21, 0+21, 52, 4+21, 52,   16+21, 8+21, 8+21, 16+21, 16+21};
-    num_vec const Pal_ind = {false, true, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true};
-        
-    
-    VectorXd get_eff(int ls, int p)
+    struct inter_data_t
     {
-        boost::random::weibull_distribution<> Pal_E(12.4311, 0.772251);
-        boost::random::weibull_distribution<> Mab_E(11.8975, 0.7317);
-        boost::random::weibull_distribution<> Vac_E(31.4637, 0.844676);
-        boost::random::weibull_distribution<> Mat_E(3.32676, 0.461343);
+        // Each vector has 14 entries corresponding to the 14 intervention programme of the order:
+        // None, PAL-VHR-S, MAB-VHR-S, MAB-HR-S, MAB-HR-A, MAB-ALL-S, MAB-ALL-A, MAT-S, MAT-A, VAC-INF-S, VAC-INF-A, VAC-2-4-S,VAC-5-9-S, VAC-5-14-S, VAC-75-S, VAC-75-S
+        str_vec prog_no; // Folder names for output-files
         
-        VectorXd eff = VectorXd::Zero(ls);
-        for (int s = 0; s < ls; s++)
+        str_vec prog_name;       // Name of programme (Redundant?)
+        str_vec cal_type;        // Type of calendar used
+        vector2D t_group;        // Target age group
+        num_vec c_ad;            // Cost of prophylatics (palivizumab cost = 57.5)
+        
+        vector2D uprate;         //  Uptake
+        num_vec cov;             // Coverage
+        num_vec cov_c;           // Coverage of maternal group (proportion in group c)
+        num_vec start_w;         // Start week (0=Jul 1st)
+        num_vec end_w;           // End week (0=Jul 1st)
+        num_vec Pal_ind;         // Indicator for Palivizumab
+        
+        // efficacy holders
+        VectorXd eff_pal;     // Palivizumab
+        VectorXd eff_mab;     // long-acting monoclonal antibodies
+        VectorXd eff_vac;     // vaccines (elderly + infants)
+        VectorXd eff_mat;     // maternal
+        VectorXd vac_delay;   // delay between vacciantion and immunity (due to build up of antibodies)
+
+        
+        num_vec rate;
+        double om_mab; double xi_b;
+        
+        inter_data_t()
         {
-            if (p == 1)
-                eff(s) = Pal_E(rng);
-            else if (p == 2)
-                eff(s) = Mab_E(rng);
-            else if (p == 3)
-                eff(s) = Vac_E(rng);
-            else if (p == 4)
-                eff(s) = Mat_E(rng);
-            else
-                cout << "Error" <<  endl;
+            prog_no =   {"P_",   "P0_", "P1_",   "P2_",  "P3_",  "P4_",  "P5_",  "P6_",  "P7_",  "P8_",  "P9_","P10_", "P11_", "P12_", "P13_", "P14_"};
+            prog_name = {"Base_","Pal_","mABVHR_","mABHR_","mABHR_","mAB_","mAB_","matS_","matA_","infS_"  ,"infA_"  ,"Pre"    ,"Sch1_" ,"Sch2_"  ,"Eld1_"   ,"Eld2_"};
+            cal_type = {"None", "None", "Mvhr", "Mhr", "Mhr_p", "Mlr", "Mlr_p", "mat", "mat", "LAV_inf", "LAV_inf", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald"};
+            t_group = {cal::G_base, cal::G_base, cal::G_base, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_par, cal::G_par, cal::G_2mo, cal::G_2mo, cal::G_2_4, cal::G_5_10, cal::G_5_14, cal::G_75_, cal::G_65_};
+            c_ad =   {0, 0, 11.5,11.5, 11.5, 11.5, 11.5,       9, 9, 9, 9, 9, 9, 9, 9, 9};
+            uprate = {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, cal::up_week_2t3, cal::up_week_u65, cal::up_week_u65, cal::up_week_o65, cal::up_week_o65};
+            cov = {0.0, 0.9, 0.9,0.9, 0.9, 0.9, 0.9, 0.6, 0.6, 0.9, 0.9, 0.45, 0.6, 0.6, 0.7, 0.7};
+            cov_c = {0.0, 0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.6, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+            start_w = {0.0,  16, 16, 12,  12,    12,   12,       0,    0,  4,    0,    16,    16,    16,    16,     16};
+            end_w   = {0.0,  37, 37, 12+21, 12+21, 12+21, 12+21, 0+21, 52, 4+21, 52,   16+21, 8+21, 8+21, 16+21, 16+21};
+            Pal_ind = {false, true, false, false, false, false, false, true, true, true, true, true, true, true, true, true, true};
+            
+            om_mab = 1.0/250.0;
+            xi_b = 1.0;
         }
-        return eff;
-    }
+        
+        void get_eff(inter_data_t& inter_data, int ls)
+        {
+            // Distributions assocaited with efficacy
+            boost::random::weibull_distribution<> Pal_E(12.4311, 0.772251);
+            boost::random::weibull_distribution<> Mab_E(11.8975, 0.7317);
+            boost::random::weibull_distribution<> Vac_E(31.4637, 0.844676);
+            boost::random::weibull_distribution<> Mat_E(3.32676, 0.461343);
+            
+            inter_data.eff_pal = VectorXd::Zero(ls); inter_data.eff_mab = VectorXd::Zero(ls);
+            inter_data.eff_vac = VectorXd::Zero(ls); inter_data.eff_mat = VectorXd::Zero(ls);
+
+            // Get samples of efficacies from distributions
+            for (int s = 0; s < ls; s++)
+            {
+                inter_data.eff_pal(s) = Pal_E(rng);
+                inter_data.eff_mab(s) = Mab_E(rng);
+                inter_data.eff_vac(s) = Vac_E(rng);
+                inter_data.eff_mat(s) = Mat_E(rng);
+            }
+            
+        }
+    };
     
-    
+    // Turns weekly uptake ratein daily uptake rates
     num_vec gen_daily(num_vec up_week_raw, int week_s)
     {
         num_vec up_week(52,0); num_vec up_day(365,0);
@@ -433,13 +457,7 @@ namespace cal
         return up_day;
     }
     
-    //Potential end coverages
-    //number of days per month
-    //num_vec day_m = {31, 31, 30, 31, 30, 31, 31, 28, 31, 30, 31, 30};
-    //num_vec day_m_Cum = {0, 31, 62, 92, 123, 153, 184, 215, 243, 274, 304, 335, 365};
-    
     //Dating is 0 = 1st Jul, 1 = 1st Aug, 2 = 1st Sep, 3 = 1st Oct, 4 = 1st Nov, 5 = 1st Dec, 6 = 1st Jan, 7 = 1st Feb, 8 = 1st Mar, 9 = 1st Apr, 10 = 1st May, 11 = 1st Jun.
-    
     struct Calendar_full
     {
         bool ind_OOB;
@@ -466,95 +484,105 @@ namespace cal
         MatrixXd cal_LAV_LR_dose = MatrixXd::Zero(365, NoAgeG);
         MatrixXd cal_mat_LR_dose = MatrixXd::Zero(365, NoAgeG);
         int s;
-        
-        VectorXd eff_pal;
-        VectorXd eff_mab;
-        VectorXd eff_vac;
-        VectorXd eff_mat;
 
-        Calendar_full(num_vec t_group_par_i,  double cov_i, num_vec rate_i, int t_start_i, int t_end_i, bool pal_ind_i, string proph_ind_i, int s_t, VectorXd eff_pal_t, VectorXd eff_mab_t, VectorXd eff_vac_t, VectorXd eff_mat_t):  t_group(t_group_par_i), cov(cov_i), rate(rate_i), t_start(t_start_i), t_end(t_end_i), pal_ind(pal_ind_i), proph_ind(proph_ind_i), s(s_t), eff_pal(eff_pal_t), eff_mab(eff_mab_t), eff_vac(eff_vac_t), eff_mat(eff_mat_t)
+        Calendar_full(inter_data_t& inter_data, int s, int iN)
         {
+            // Calendar type
+            string proph_ind = inter_data.cal_type[iN];
+            // Palivizumab used?
+            bool pal_ind = inter_data.Pal_ind[iN];
+
+            // Properties of calendar
+            double t_start = inter_data.start_w[iN];
+            double t_end = inter_data.end_w[iN];
+            double cov = inter_data.cov[iN];
+            num_vec t_group = inter_data.t_group[iN];
+            num_vec rate = inter_data.rate;
+            
+            // Efficacy
+            double eff_pal = inter_data.eff_pal[s];
+            double eff_mab = inter_data.eff_mab[s];
+            double eff_vac = inter_data.eff_vac[s];
+            double eff_mat = inter_data.eff_mat[s];
+
             ind_OOB = false;
             if (pal_ind == true)
             {
-                cal_pal = PAL_calendar(init, 'p', s, eff_pal);
-                cal_pal_dose = PAL_calendar(init, 'd', s, eff_pal);
+                cal_pal = PAL_calendar(init, 'p', eff_pal);
+                cal_pal_dose = PAL_calendar(init, 'd', eff_pal);
             }
             
             if (proph_ind == "Mvhr")
             {
-                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', s, eff_mab);
+                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', eff_mab);
+                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', eff_mab);
             }
             else if (proph_ind == "Mhr")
             {
-                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_HR = mAB_calendar(init, t_group, cov, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', s, eff_mab);
-                cal_mAB_HR_dose = mAB_calendar(init, t_group, cov, t_start, t_end, 'd', s, eff_mab);
+                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', eff_mab);
+                cal_mAB_HR = mAB_calendar(init, t_group, cov, t_start, t_end, 'p', eff_mab);
+                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', eff_mab);
+                cal_mAB_HR_dose = mAB_calendar(init, t_group, cov, t_start, t_end, 'd', eff_mab);
             }
             else if (proph_ind == "Mhr_p")
             {
-                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_HR = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', s, eff_mab);
-                cal_mAB_HR_dose = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'd', s, eff_mab);
+                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', eff_mab);
+                cal_mAB_HR = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'p', eff_mab);
+                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', eff_mab);
+                cal_mAB_HR_dose = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'd', eff_mab);
             }
             else if (proph_ind == "Mlr")
             {
-                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_HR = mAB_calendar(init, t_group, cov, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_LR = mAB_calendar(init, t_group, cov, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', s, eff_mab);
-                cal_mAB_HR_dose = mAB_calendar(init, t_group, cov, t_start, t_end, 'd', s, eff_mab);
-                cal_mAB_LR_dose = mAB_calendar(init, t_group, cov, t_start, t_end, 'd', s, eff_mab);
+                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', eff_mab);
+                cal_mAB_HR = mAB_calendar(init, t_group, cov, t_start, t_end, 'p', eff_mab);
+                cal_mAB_LR = mAB_calendar(init, t_group, cov, t_start, t_end, 'p', eff_mab);
+                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', eff_mab);
+                cal_mAB_HR_dose = mAB_calendar(init, t_group, cov, t_start, t_end, 'd', eff_mab);
+                cal_mAB_LR_dose = mAB_calendar(init, t_group, cov, t_start, t_end, 'd', eff_mab);
             }
             else if (proph_ind == "Mlr_p")
             {
-                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_HR = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_LR = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'p', s, eff_mab);
-                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', s, eff_mab);
-                cal_mAB_HR_dose = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'd', s, eff_mab);
-                cal_mAB_LR_dose = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'd', s, eff_mab);
+                cal_mAB_VHR = mAB_vhr_calendar(init, t_start, t_end, 'p', eff_mab);
+                cal_mAB_HR = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'p', eff_mab);
+                cal_mAB_LR = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'p', eff_mab);
+                cal_mAB_VHR_dose = mAB_vhr_calendar(init, t_start, t_end, 'd', eff_mab);
+                cal_mAB_HR_dose = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'd', eff_mab);
+                cal_mAB_LR_dose = mAB_calendar_plus(init, t_group, cov, t_start, t_end, 'd', eff_mab);
             }
             else if (proph_ind == "LAV_inf")
             {
-                cal_LAV_HR = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'p', s, eff_vac);
-                cal_LAV_LR = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'p', s, eff_vac);
-                cal_LAV_HR_dose = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'd', s, eff_vac);
-                cal_LAV_LR_dose = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'd', s, eff_vac);
+                cal_LAV_HR = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'p', eff_vac);
+                cal_LAV_LR = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'p', eff_vac);
+                cal_LAV_HR_dose = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'd', eff_vac);
+                cal_LAV_LR_dose = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 2, 'd', eff_vac);
             }
             else if (proph_ind == "LAV_ald")
             {
-                cal_LAV_LR = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 1, 'p', s, eff_vac);
-                cal_LAV_LR_dose = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 1, 'd', s, eff_vac);
+                cal_LAV_LR = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 1, 'p', eff_vac);
+                cal_LAV_LR_dose = LAV_calendar(init, t_group, cov, rate, t_start, t_end, 1, 'd', eff_vac);
             }
             else if (proph_ind == "mat")
             {
-                cal_mat_LR = mat_calendar(init, t_group, cov, t_start, t_end, 'p', s, eff_mat, eff_vac);
-                cal_mat_LR_dose = mat_calendar(init, t_group, cov, t_start, t_end, 'd', s, eff_mat, eff_vac);
+                cal_mat_LR = mat_calendar(init, t_group, cov, t_start, t_end, 'p', eff_mat, eff_vac);
+                cal_mat_LR_dose = mat_calendar(init, t_group, cov, t_start, t_end, 'd', eff_mat, eff_vac);
             }
             else
                 cout << "No cal" << endl;
         }
         
-        MatrixXd PAL_calendar(MatrixXd calendar, char t, int s, VectorXd eff_pal)
+        MatrixXd PAL_calendar(MatrixXd calendar, char t, double eff_pal)
         {
             PRNG_s rng(0);
-           // boost::random::gamma_distribution<> Ev(3.7623, 0.0898388);
             MatrixXd sero = MatrixXd::Zero(365, NoAgeG);
             MatrixXd outmat = MatrixXd::Zero(365, NoAgeG);
 
-            double VE = min(eff_pal(s),0.95);
-            
             for (int i = 15*7 ; i < 36*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
                     calendar(i%365,j) = cal::G_pal[j]*0.9/30.0;
             
             for (int i = 15*7 ; i < 36*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
-                    sero(i%365,j) = calendar(i%365,j)*VE;
+                    sero(i%365,j) = calendar(i%365,j)*eff_pal;
             
             if (t == 'p')
                 outmat = sero;
@@ -564,13 +592,11 @@ namespace cal
             return outmat;
         }
         
-        MatrixXd mAB_vhr_calendar(MatrixXd calendar, int t_start, int t_end, char t, int s, VectorXd eff_mat)
+        MatrixXd mAB_vhr_calendar(MatrixXd calendar, int t_start, int t_end, char t, double eff_mab)
         {
             PRNG_s rng(0);
             MatrixXd sero = MatrixXd::Zero(365, NoAgeG);
             MatrixXd outmat = MatrixXd::Zero(365, NoAgeG);
-
-            double VE = min(eff_mab(s),0.95);
 
             for (int i = 15*7 ; i < 36*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
@@ -578,7 +604,7 @@ namespace cal
             
             for (int i = 15*7 ; i < 36*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
-                    sero(i%365,j) = calendar(i%365,j)*VE;
+                    sero(i%365,j) = calendar(i%365,j)*eff_mab;
             
             if (t == 'p')
                 outmat = sero;
@@ -588,16 +614,12 @@ namespace cal
             return outmat;
         }
         
-        MatrixXd LAV_calendar(MatrixXd calendar, num_vec t_group, double cov, num_vec rate, int t_start, int t_end, int up_type, char t, int s, VectorXd eff_vac)
+        MatrixXd LAV_calendar(MatrixXd calendar, num_vec t_group, double cov, num_vec rate, int t_start, int t_end, int up_type, char t, double eff_vac)
         {
-            PRNG_s rng(0);
-            
             MatrixXd sero = MatrixXd::Zero(365, NoAgeG);
             MatrixXd outmat = MatrixXd::Zero(365, NoAgeG);
 
-            double VE = min(eff_vac(s),0.95);
-
-            boost::math::weibull_distribution<> W(2.42, 12.87);
+            boost::math::weibull_distribution<> W(2.42, 12.87); // delay between vaccination and immunity
             
             if (up_type == 1)
             {
@@ -615,7 +637,7 @@ namespace cal
             for(int i = 0; i < 365; i++)
                 for(int j = 0; j < NoAgeG; j++)
                     for(int k = 1; k < 30; k++)
-                        sero((i + k)%365, j) += pdf(W,k)*calendar((i)%365, j)*VE;
+                        sero((i + k)%365, j) += pdf(W,k)*calendar((i)%365, j)*eff_vac;
             
             if (t == 'p')
                 outmat = sero;
@@ -624,13 +646,10 @@ namespace cal
             return outmat;
         }
         
-        MatrixXd mAB_calendar(MatrixXd calendar, num_vec t_group, double cov, int t_start, int t_end, char t, int s, VectorXd eff_mab)
+        MatrixXd mAB_calendar(MatrixXd calendar, num_vec t_group, double cov, int t_start, int t_end, char t, double eff_mab)
         {
-            PRNG_s rng(0);
             MatrixXd sero = MatrixXd::Zero(365, NoAgeG);
             MatrixXd outmat = MatrixXd::Zero(365, NoAgeG);
-
-            double VE = min(eff_mab(s),0.95);
             
             for (int i = t_start*7 ; i < t_end*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
@@ -638,7 +657,7 @@ namespace cal
             
             for (int i = t_start*7 ; i < t_end*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
-                    sero(i%365,j) = calendar(i%365,j)*VE;
+                    sero(i%365,j) = calendar(i%365,j)*eff_mab;
             
             
             if (t == 'p')
@@ -649,13 +668,10 @@ namespace cal
             return outmat;
         }
         
-        MatrixXd mAB_calendar_plus(MatrixXd calendar, num_vec t_group, double cov, int t_start, int t_end, char t, int s, VectorXd eff_mab)
+        MatrixXd mAB_calendar_plus(MatrixXd calendar, num_vec t_group, double cov, int t_start, int t_end, char t, double eff_mab)
         {
-            PRNG_s rng(0);
             MatrixXd sero = MatrixXd::Zero(365, NoAgeG);
             MatrixXd outmat = MatrixXd::Zero(365, NoAgeG);
-            
-            double VE = min(eff_mab(s),0.95);
             
             for (int i = t_start*7 ; i < t_end*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
@@ -668,7 +684,7 @@ namespace cal
             
             for (int i = t_start*7 ; i < t_end*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
-                    sero(i%365,j) = calendar(i%365,j)*VE;
+                    sero(i%365,j) = calendar(i%365,j)*eff_mab;
             
             if (t == 'p')
                 outmat = sero;
@@ -678,32 +694,19 @@ namespace cal
             return outmat;
         }
         
-        MatrixXd mat_calendar(MatrixXd calendar, num_vec t_group, double cov, int t_start, int t_end, char t, int s, VectorXd eff_mat, VectorXd eff_vac)
+        MatrixXd mat_calendar(MatrixXd calendar, num_vec t_group, double cov, int t_start, int t_end, char t, double eff_mat, double eff_vac)
         {
-            PRNG_s rng(0);
             // vaccination can occur between 28-32 weeks gestational age for pregnant women
             MatrixXd sero = MatrixXd::Zero(365, NoAgeG);
             MatrixXd outmat = MatrixXd::Zero(365, NoAgeG);
 
-            boost::math::weibull_distribution<> W(2.42, 12.87);
-            boost::random::weibull_distribution<> Ev1(31.4637, 0.844676);
-            boost::random::weibull_distribution<> Ev2(3.32676, 0.461343);
-            
-            
-            double VE1 = eff_vac(s);
-            double VE2 = eff_mat(s);
+            boost::math::weibull_distribution<> W(2.42, 12.87); // delay between vaccination and immunity
 
-            
             for (int i = t_start*7 ; i < t_end*7+1; i++)
                 for (int j = 0 ; j < NoAgeG; j++)
                     calendar(i%365,j) = t_group[j]/365.0;
             
-            //double VE1 = Ev1(rng);
-           // double VE2 = Ev2(rng);
-            
-           // VE1 = 0.83;
-          //  VE2 = 0.414;
-            boost::math::uniform_distribution<> U(8*7, 12*7);
+            boost::math::uniform_distribution<> U(8*7, 12*7); // delay between vaccination of mother and birth of neonate
 
             for(int i = 0; i < 365; i++)
             {
@@ -711,14 +714,13 @@ namespace cal
                 {
                     for(int k = 1; k < 31; k++)
                     {
-                        sero((i + k)%365, j) += pdf(W,k)*calendar((i)%365, j)*VE1;
+                        sero((i + k)%365, j) += pdf(W,k)*calendar((i)%365, j)*eff_vac;
                     }
                 }
                 for(int k = 8*7; k < 12*7; k++)
-                    sero((i + k)%365, 0) += pdf(U,k)*calendar((i)%365, 19)*VE2*365;
+                    sero((i + k)%365, 0) += pdf(U,k)*calendar((i)%365, 19)*eff_mat*365;
                 
             }
-            
             if (t == 'p')
                 outmat = sero;
             else
@@ -728,6 +730,7 @@ namespace cal
         }
     };
 }
+
 
 namespace interventions
 {

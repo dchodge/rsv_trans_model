@@ -94,6 +94,7 @@ void parallel_temp_mcmc(const std::vector<std::string>& paramFit, int Nburn, int
             mhp::save(mhp_state, mcmc_state);
         
     }
+    
     // Write data for the 4 coldest chains
     amh::write_mcmc (mcmc_state[0], pars_r[0], 'A');
     amh::write_mcmc (mcmc_state[1], pars_r[1], 'B');
@@ -109,7 +110,7 @@ void parallel_temp_mcmc(const std::vector<std::string>& paramFit, int Nburn, int
 // Arg:"mcmc_state" -> class of the current mcmc state
 // Arg:"pars" -> class of the current parameter values
 // Arg:"seed" -> seed vector
-void posterior_inc(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars,  num_vec seed)
+void posterior_inc(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, num_vec seed)
 {
     // WRITE THE POS AND SAMPLE SOLUTIONS (1000 SAMPLES FROM POSTERIOR)
     sim_ouput::write_inc (pars, mcmc_state, 'Z', seed);
@@ -128,53 +129,36 @@ void posterior_inc(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_sta
 // Arg:"pars" -> class of the current parameter values
 // Arg:"mcmc_state" -> class of the current mcmc state
 // Arg:"seed" -> seed vector
-// Arg:"time_hor" -> time_horizon (10 years)
-// Arg:"disc" -> discounting (3.5%)
-void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state, num_vec seed, int time_hor, double disc)
+void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t& inter_data, num_vec seed)
 {
     asc::Recorder recorder; // record the values (in ascent package)
-    
-    // Get efficacy for the four prophylatic agents
-    VectorXd eff_pal = cal::get_eff(seed.size(), 1);    // Palivizumab
-    VectorXd eff_mab =  cal::get_eff(seed.size(), 2);   // long-acting monoclonal antibodies
-    VectorXd eff_vac =  cal::get_eff(seed.size(), 3);   // vaccines (elderly + infants)
-    VectorXd eff_mat =  cal::get_eff(seed.size(), 4);   // maternal vaccine
-
-    // Names of the progamme for writing
-    str_vec prog_no =   {"P_", "P1_", "P2_", "P3_", "P4_" , "P5_", "P7_", "P9_", "P10_", "P11_", "P12_", "P13_"};
-    str_vec prog_no_out = {"P_", "P1_", "P2_", "P3_", "P4_" , "P5_", "P7_", "P9_", "P10_", "P11_", "P12_", "P13_"};
-    str_vec prog_name = {"Base_", "mABHR_","mABHR_","mAB_" ,"mAB_" , "matS_","infS_","Pre"    ,"Sch1_" ,"Sch2_"  ,"Eld1_"   ,"Eld2_"};
-    
-    //Intervention calendar generation for each programme
-    str_vec cal_type = {"None", "Mhr","Mhr_p","Mlr","Mlr_p", "mat", "LAV_inf", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald"}; // Calendar identifier
-    vector2D t_group = {cal::G_base, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_par, cal::G_2mo, cal::G_2_4, cal::G_5_10, cal::G_5_14, cal::G_75_, cal::G_65_}; // Target age group
-    vector2D uprate = {{0},{0},{0},{0},{0},{0},{0}, cal::up_week_2t3, cal::up_week_u65, cal::up_week_u65, cal::up_week_o65, cal::up_week_o65}; // Uptake rate
-    num_vec cov =     {0.0,0.9,0.9,0.9,0.9,0.6,0.9, 0.45, 0.6, 0.6, 0.7, 0.7}; // Coverage
-    num_vec cov_c =   {0.0,0.0,0.0,0.0,0.0,0.6,0.0,0.0,0.0,0.0,0.0,0.0}; // coverage of maternal
-    num_vec c_ad =  {0.0, 11.5, 11.5, 11.5, 11.5, 9, 9, 9,9, 9, 9, 9, 9, 9}; // Price per course
-    num_vec Pal_ind = {false,false,false,false,false,true,true, true, true, true, true, true}; // Palivizumab progamme?
-    num_vec inc;
-    
+    num_vec ind_s = {0, 2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14};
+    str_vec sea_name = {"P_","P1_","P2_","P3_","P4_","P5_","P6_","P8_","P10_","P11_","P12_","P13_","P14_"};
     cea_state_t cea_state;
-    
     int s = 0;
     num_vec tot_incp(12,0);
+    
     for (int w = 0; w < 52; w = w + 4)
     {
-        for (int iN = 0; iN < 12 ; iN++)
+        for (int i = 0; i < 12 ; i++)
         {
-            num_vec up_take_base = cal::gen_daily(uprate[iN], w);
-            cal::Calendar_full cal(t_group[iN], cov[iN], up_take_base, w, w+21, Pal_ind[iN], cal_type[iN], s, eff_pal, eff_mab, eff_vac, eff_mat);
-            num_vec inciall = sim_ouput::int_post(pars, mcmc_state, cal, false, seed[s], cov_c[iN],  c_ad[iN], cea_state, 1.0/250.0, 1);
+            num_vec up_take_base = cal::gen_daily(inter_data.uprate[ind_s[i]], w);
+            inter_data.rate = up_take_base;
+            inter_data.start_w[ind_s[i]] = w;
+            inter_data.end_w[ind_s[i]] = w+21;
 
-            tot_incp[iN] = cea_state.Q;
-            cout << tot_incp[iN] << endl;
+            cal::Calendar_full cal(inter_data, s, ind_s[i]);
+            
+            num_vec inciall = sim_ouput::int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], ind_s[i], false);
+
+            tot_incp[i] = cea_state.Q;
+            cout << "Starting week number: " << w << ". Programme: " << sea_name[i] << ". Total QALY loss: " << tot_incp[i] << endl;
             cea_state.cea_state_clear(cea_state);
         }
         recorder({(double)w});
         recorder.add(tot_incp);
     }
-    recorder.csv(get_ll::dout + "soln/" + "find_optimal" , prog_no_out);
+    recorder.csv(get_ll::dout + "soln/" + "find_optimal", sea_name);
 }
 
 // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
@@ -182,20 +166,13 @@ void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state,
 // Arg:"mcmc_state" -> class of the current mcmc state
 // Arg:"pars" -> class of the current parameter values
 // Arg:"seed" -> seed vector
-// Arg:"time_hor" -> time_horizon (10 years)
-// Arg:"disc" -> discounting (3.5%)
-void intervention_p(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars,  num_vec seed, int time_hor, double disc)
+void intervention_p(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, cal::inter_data_t& inter_data, num_vec seed)
 {
-    // Get efficacy for the four prophylatic agents
-    VectorXd eff_pal = cal::get_eff(seed.size(), 1);    // Palivizumab
-    VectorXd eff_mab =  cal::get_eff(seed.size(), 2);   // long-acting monoclonal antibodies
-    VectorXd eff_vac =  cal::get_eff(seed.size(), 3);   // vaccines (elderly + infants)
-    VectorXd eff_mat =  cal::get_eff(seed.size(), 4);   // maternal vaccine
-    
+    // Intervention programme characteristics
     for (int i = 0; i < 16; i++)
     {
         cout << i << endl;
-        sim_ouput::write_interventions(pars, mcmc_state, cal::prog_no[i], cal::prog_name[i], seed, cal::cov_c[i], cal::c_ad[i], time_hor, eff_pal, eff_mab, eff_vac, eff_mat, i, disc, 1.0/250.0, 1);
+        sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, i);
     }
 }
 
@@ -204,28 +181,35 @@ void intervention_p(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_st
 // Arg:"mcmc_state" -> class of the current mcmc state
 // Arg:"pars" -> class of the current parameter values
 // Arg:"seed" -> seed vector
-// Arg:"time_hor" -> time_horizon (10 years)
-// Arg:"disc" -> discounting (3.5%)
-void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars,  num_vec seed, int time_hor, double disc)
+void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc_state, param::param_state_t& pars, cal::inter_data_t& inter_data, num_vec seed)
 {
-    // Intervention programme identifiers
-    VectorXd eff_pal = cal::get_eff(seed.size(), 1);
-    VectorXd eff_mab =  cal::get_eff(seed.size(), 2);
-    VectorXd eff_vac =  cal::get_eff(seed.size(), 3);
-    VectorXd eff_mat =  cal::get_eff(seed.size(), 4);
+    // Intervention programme characteristics
+    num_vec ind_s1 = {0, 1, 2, 3, 4, 5, 6};
+    num_vec ind_s2 = {0, 1, 2, 3, 4, 5, 6};
+    num_vec ind_s3 = {0, 1, 2, 7, 8};
     
+    inter_data.prog_no =  {"PA_", "P0A_", "P1A_", "P2A_",  "P3A_",  "P4A_",  "P5A_"};
+    inter_data.om_mab = 1.0/150.0;
     for (int i = 0; i < 7; i++)
     {
-        cout << i << endl;
-        sim_ouput::write_interventions(pars, mcmc_state, cal::prog_no_SA_1[i], cal::prog_name[i], seed, cal::cov_c[i], cal::c_ad[i], time_hor, eff_pal, eff_mab, eff_vac, eff_mat, i, disc, 1.0/150.0, 1);
-        sim_ouput::write_interventions(pars, mcmc_state, cal::prog_no_SA_2[i], cal::prog_name[i], seed, cal::cov_c[i], cal::c_ad[i], time_hor, eff_pal, eff_mab, eff_vac, eff_mat, i, disc, 1.0/365.0, 1);
+        cout << ind_s1[i] << endl;
+        sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, ind_s1[i]);
     }
+    
+    inter_data.prog_no =   {"PB_", "P0B_", "P1B_", "P2B_",  "P3B_",  "P4B_",  "P5B_"};
+    inter_data.om_mab = 1.0/365.0;
+    for (int i = 0; i < 7; i++)
+    {
+        cout << ind_s1[i] << endl;
+        sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, ind_s2[i]);
+    }
+    
+    inter_data.prog_no =   {"PC_", "P0C_", "P1C_", "P2C_",  "P3C_",  "P4C_", "P5C_", "P6C_", "P7C_"};
+    inter_data.om_mab = 1.0/250.0;
+    inter_data.xi_b = 0.75;
 
-    for (int i = 0; i < 2; i++)
-        sim_ouput::write_interventions(pars, mcmc_state, cal::prog_no_SA_3[i], cal::prog_name[i], seed, cal::cov_c[i], cal::c_ad[i], time_hor, eff_pal, eff_mab, eff_vac, eff_mat, i, disc, 1.0/250.0, 0.75);
-
-    for (int i = 7; i < 9; i++)
-        sim_ouput::write_interventions(pars, mcmc_state, cal::prog_no_SA_3[i], cal::prog_name[i], seed, cal::cov_c[i], cal::c_ad[i], time_hor, eff_pal, eff_mab, eff_vac, eff_mat, i, disc, 1.0/250.0, 0.75);
+    for (int i = 0; i < 5; i++)
+        sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, ind_s3[i]);
 
 }
 
@@ -263,8 +247,6 @@ int main(int argc, const char * argv[]) {
     num_vec seed;
     for (int s = 0; s < 10; s++)
         seed.push_back(uniform_dist_disc(0, mcmc_state.NK2-1, 'r'));
-    int time_hor = 10;      // Time horizon
-    double disc = 0.035;    // Discounting
     
 /**********************************/
 /**      2. EVALUATE MODEL FIT        **/
@@ -276,8 +258,12 @@ int main(int argc, const char * argv[]) {
 /**********************************/
 /**     3. FIND OPTIMAL WEEK            **/
 /**********************************/
+    // Get intervention programme characteristics
+    cal::inter_data_t inter_data;
+    inter_data.get_eff(inter_data, seed.size());
+    
     // FUNC3:"find_optimal_week" -> Determine the optimal month for seasonal programmes to begin
-    find_optimal_week(pars, mcmc_state, seed, time_hor, disc);
+    //find_optimal_week(pars, mcmc_state, inter_data, seed);
     
 /**********************************/
 /**     4. COMPARE CONSISTENCY (other file)         **/
@@ -286,8 +272,8 @@ int main(int argc, const char * argv[]) {
     // FUNC4a:"consistency_checks" -> XXXX
     // FUNC4b:"write_foi_mat" -> XXXX
     
-    //sim_ouput::consistency_checks(pars, mcmc_state, 1, 1.0/250.0, 1.0);
-    //sim_ouput::write_foi_mat(pars, mcmc_state, 100);
+    //sim_ouput::consistency_checks(pars, mcmc_state, inter_data);
+    //sim_ouput::write_foi_mat(pars, mcmc_state, inter_data, 100);
     
 /**********************************/
 /**  5. EVALUATE INTERVENTION PROGRAMMES        **/
@@ -295,6 +281,6 @@ int main(int argc, const char * argv[]) {
     // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
     // FUNC5b:"intervention_p_SA" -> Run the simualtions for the sensitivtiy analysis
 
-    //intervention_p(paramFitA, mcmc_state, pars, seed, time_hor, disc);
-    //intervention_p_SA(paramFitA, mcmc_state, pars, seed, time_hor, disc);
+    intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
+    //intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
 }

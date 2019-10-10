@@ -232,7 +232,7 @@ int main(int argc, const char * argv[]) {
 /**********************************/
     // FUNC1:"parallel_temp_mcmc -> Run the MCMC parallel tempering algorithm
     //parallel_temp_mcmc(paramFitA, 25000, 50000, 100, 20, 12, 'A');
-    
+    mp
 /**********************************/
 /**      2. EVALUATE MODEL FIT        **/
 /**********************************/

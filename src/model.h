@@ -943,12 +943,6 @@ namespace get_ll
             {
                 return log(0);
             }
-            /*if (a<24)
-            {
-                if ((inc_tot(a)/popsize[a])*1.1 < inc_tot(a+1)/popsize[a+1])
-                    return log(0);
-            }*/
-            //pl += prior_on_incidence(inc_tot(a), a, popsize);
         }
 
         

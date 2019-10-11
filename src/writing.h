@@ -512,7 +512,7 @@ namespace sim_ouput
     /**********************************/
     /**    WRTIE INTERVENTION PROGRAMMES  **/
      /**********************************/
-
+    
     void int_post(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::Calendar_full cal, cal::inter_data_t& inter_data, cea_state_t& cea_state, int s, int iN, bool dir_ind)
     {
         VectorXd sample_post;
@@ -641,6 +641,7 @@ namespace sim_ouput
         }
     }
     
+    // write_interventions -> write out all the outpouts assocaited with intervention programmes
     void write_interventions(param::param_state_t& pars, amh::amh_state_t& mcmc_state, cal::inter_data_t inter_data, num_vec seed, int iN)
     {
         asc::Recorder record_inc, record_inc_pri, record_s, record_h, record_d, record_gp, record_bd, record_dose, record_q, record_cp, record_ct;

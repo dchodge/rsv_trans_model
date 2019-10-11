@@ -6,6 +6,7 @@
 #ifndef epmgp_h
 #define epmgp_h
 
+
 namespace Eigen {
     namespace internal {
         //template<typename Scalar>

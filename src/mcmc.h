@@ -18,44 +18,36 @@
 
 namespace amh
 {
-    
-    struct amh_state_t
+    struct amh_state_t  // a structure which contains all variables assocaited with an mcmc chain
     {
         //! Keep track of means of the mcmc samples
         Eigen::VectorXd means_parameters, prop_parameters, M_wg, M_v, prop_lprior_mwg, prop_llikelihood_mwg, curr_lprior_mwg, curr_llikelihood_mwg, my_acceptance_rate_mwg;
         MatrixXd emp_cov_matrix_fix, init_id_matrix, emp_cov_matrix, emp_cov_matrix1, emp_cov_matrix2, emp_cov_matrix3;
-        
-        MatrixXd cholesky_I; // Cholesky decomposition of identity matrix
         
         // Important parameterrs in the run
         MatrixXd explore, result, posterior;
         VectorXd llikelihoods, llikelihoods_post, accept_ratios, accept_ratios_post, mean_parameters, curr_parameters;
         double curr_llikelihood, curr_lprior;
         
-        bool OOB;
-        bool adap_covar;
-        
+        bool OOB;           // indicator function to determine if sampled point in proposal is out of bounds
+        bool OOB_indi;      // indicator function to determine if sampled point in proposal is out of bounds
+
         double adaptive_scaling;
-        double conv_scaling;
-        double prop_hnr;
-        size_t no_accepted;
-        size_t no_adaptive;
-        bool adaptive_step;
+        size_t no_accepted;     // number of accepted points in the markov chain
+        size_t no_adaptive;     // number of adaptive points accepted in the markov chain
+        bool adaptive_step;     // indicator function to detemrine if the step is adaptive
         
-        double prop_llikelihood, prop_lprior;
-        bool OOB_indi;
-        double my_acceptance_rate;
+        double prop_llikelihood;    // holder for the proposed log-likelihood
+        double prop_lprior;         // holder for the proposed log-prior
+        double prop_hnr;                    // holder for the random probability samples to compare with the acceptance probability
+        double my_acceptance_rate;          // holder for the acceptance probability
         double T;
-        double T_f;
-        int k_wg;
-        int ss;
         int L;
-        double L_f;
-        double Ms, lambda;
-        double delta;
+        double Ms;
+        double lambda;
         int i, B;
         
-        ///Stuff that is not changeable
+        /// Stuff that is not changeable
         int k1, k2, Mburn, N0, N1, NK1, NK2, nk_1, nk_2;         //thinning
         int Nburn, Nrun, Nthin_all, Nthin_pos;
         double cov_scal_b;
@@ -127,6 +119,7 @@ namespace amh
         return state;
     }
     
+    // gain factors
     inline double gain_factor1(size_t n)
     {
         return 1.0/pow(n + 1.0, 1.0);
@@ -137,8 +130,8 @@ namespace amh
         return 1.0/pow(n + 1.0, 0.5);
     }
     
-    
-    void update_cov( amh_state_t& state) //two && if it goes through other function
+    // update_cov -> update the adaptive covariance matrix according to the new point in markov chain
+    void update_cov( amh_state_t& state)
     {
         double gf2 = gain_factor2(state.i);
         /*update of the variance-covariance matrix and the mean vector*/
@@ -153,9 +146,9 @@ namespace amh
         }
     }
     
+    // accepted -> stochastic approximation to chain the scaling factor in the covariance matrix
     void accepted( amh_state_t& state, bool accepted, bool adaptive_step_size)
     {
- 
         if (state.adaptive_step)
             ++state.no_adaptive;
         
@@ -179,8 +172,10 @@ namespace amh
         }
     }
     
+    // everything in this namespace helps sample frmo the proposal distributions
     namespace get_proposal
     {
+        // check_support -> check the sampled point is in the support of the truncated multivariate normal distribution
         void check_support(param::param_state_t& pars, VectorXd chain_pos)
         {
 
@@ -192,6 +187,7 @@ namespace amh
             pars.OOS = false;
         }
         
+        // check_support -> sample a point from a random normal
         Eigen::VectorXd random_normal(amh::amh_state_t &state, param::param_state_t& pars)
         {
             VectorXd trans_temp(pars.dim_cal);
@@ -213,6 +209,7 @@ namespace amh
             return trans_temp;
         }
         
+        // covar_adap -> sample a point from the adaptive covariance matrix
         Eigen::VectorXd covar_adap(amh::amh_state_t &state, param::param_state_t& pars)
         {
             VectorXd trans_temp(pars.dim_cal);
@@ -237,6 +234,7 @@ namespace amh
             return trans_temp;
         }
         
+        // sherlock -> using the sherlock proposal:
         void sherlock(amh::amh_state_t &state, param::param_state_t& pars)
         {
             VectorXd prop_temp;
@@ -259,6 +257,7 @@ namespace amh
         }
     }
     
+    // write_mcmc ->  write imporant variables for a chain
     void write_mcmc (amh::amh_state_t& mcmc_state,  param::param_state_t& pars, char F)
     {
         
@@ -313,7 +312,7 @@ namespace amh
 
 namespace mhp
 {
-    struct mhp_state_t
+    struct mhp_state_t // structure for parameter values which are used across all the chains
     {
         VectorXd S, no_accep, no_attemp, means_parameters, mean_parameters1, mean_parameters2, mean_parameters3;
         MatrixXd A, A_full, M_full, T_full, S_full, emp_cov_matrix, emp_cov_matrix1, emp_cov_matrix2, emp_cov_matrix3;
@@ -331,6 +330,7 @@ namespace mhp
         }
     };
     
+    // initialise this first
     mhp_state_t pre_initialize(int no_Chain, int Nrun, int Nthin_all)
     {
         mhp_state_t mhp_state;
@@ -371,6 +371,7 @@ namespace mhp
         
     }
     
+    // initialise this second
     mhp_state_t post_initialize(mhp::mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state)
     {
 
@@ -387,6 +388,7 @@ namespace mhp
         return mhp_state;
     }
     
+    // gain factor
     inline double gain_factor1(size_t n)
     {
         return 1.0/pow(n + 1.0, 1.0);
@@ -397,23 +399,27 @@ namespace mhp
         return 1.0/(pow(mhp_state.t + 1.0, 0.5));
     }
     
+    // S_edit -> update S value
     void S_edit(mhp_state_t &mhp_state, int p)
     {
         mhp_state.S(p) = mhp_state.S(p) + gain_factor(mhp_state)*(mhp_state.A(p) - 0.234);
     }
     
+    // T_edit -> update T value
     void T_edit(mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state)
     {
         for (int i = 0; i < mhp_state.N-2; i++)
             mcmc_state[i+1].T = mcmc_state[i].T + exp(mhp_state.S(i));
     }
     
+    // ratio_swap -> calculate the acceptance to swap chains
     inline double ratio_swap(amh::amh_state_t &state_mcmc_i, amh::amh_state_t &state_mcmc_j)
     {
         
         return min(1.0, exp((state_mcmc_j.curr_llikelihood + state_mcmc_j.curr_lprior - state_mcmc_i.curr_llikelihood - state_mcmc_i.curr_lprior)*(1.0/state_mcmc_i.T - 1.0/state_mcmc_j.T)) );
     }
     
+    // save -> save elements of the mhp
     void save(mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state)
     {
         for (int i = 0; i < mhp_state.N; i++)
@@ -430,6 +436,7 @@ namespace mhp
         mhp_state.nk++;
     }
     
+    // update_swap -> swap adjacents chains according to the swapping probability
     void update_swap(mhp::mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state, int i)
     {
         for (int j = 0; j < mhp_state.N; j++ )
@@ -454,8 +461,10 @@ namespace mhp
         }
     }
     
+    // everything in here is used during the
     namespace run_MH
     {
+        //  initialize_mcmc -> initialise the mcmc algorithm
         amh::amh_state_t initialize_mcmc(std::vector<std::string> paramFit_t, std::vector<param::param_state_t> &pars_r, int Nburn, int Nrun, int Nthin_all, int Nthin_pos)
         {
             
@@ -500,7 +509,7 @@ namespace mhp
             return mcmc_state;
         }
         
-        // Get the likelihood for each of the newly sampled points for each markov chain
+        //  get_pop_llikelihood -> get the likelihood for each of the newly sampled points for each markov chain
         void get_pop_llikelihood(mhp::mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state, std::vector<param::param_state_t> &pars)
         {
             //Sample point from proposal distribution, q() (see proposal.h)
@@ -516,6 +525,7 @@ namespace mhp
             }
         }
         
+        // update_mcmc -> function to determine the correction factor due to asymetry arising from truncation
         double correction_mvn(VectorXd curr, VectorXd prop, MatrixXd Sigma, param::param_state_t& pars )
         {
             mvn::epmgp_t epmgp;
@@ -532,6 +542,7 @@ namespace mhp
             return retcur - retprop;
         }
         
+        // update_mcmc -> function to calculate the acceptance probability of metropolis hasting algorithm
         void get_acceptance(mhp::mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state, std::vector<param::param_state_t> &pars)
         {
             for (int i = 0; i < mhp_state.N; i++)
@@ -585,6 +596,7 @@ namespace mhp
             }
         }
         
+        // update_mcmc ->
         void update_mcmc (mhp::mhp_state_t &mhp_state, std::vector<amh::amh_state_t> &mcmc_state, std::vector<param::param_state_t> &pars)
         {
             // Update the chain number, adaptive covariance matrix.
@@ -654,6 +666,7 @@ namespace mhp
         }
     }
     
+    // write_mhp_state -> function to output information from the mhp state
     void write_mhp_state(mhp_state_t &mhp_state, char F)
     {
         string FileMC_chain_M_full = get_ll::model_t + "MC_chain_M_full_" + F + ".txt";      //Output MC

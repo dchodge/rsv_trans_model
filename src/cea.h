@@ -29,6 +29,7 @@ struct cea_state_t
     int time_hor;   // time horizon
     double disc;    // discounting
     
+    // initial values in constructor
     cea_state_t()
     {
         time_hor = 10;
@@ -52,6 +53,7 @@ struct cea_state_t
         Q = CP = CT = 0;
     }
     
+    // clear all the values
     void cea_state_clear(cea_state_t& cea_state)
     {
         for (int i = 0; i < NoAgeG; i++)
@@ -73,6 +75,7 @@ struct cea_state_t
 };
 
 
+// get_QALY -> convert the cases averted to QALY loss
 double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& H_tot, num_vec& D_tot, int s)
 {
     num_vec S_a; num_vec H_a; num_vec D_a;
@@ -120,6 +123,7 @@ double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_
 }
 
 
+// get_QALY -> convert the cases averted to QALY loss
 double get_QALY_2(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& GP_tot, num_vec& H_tot, num_vec& D_tot, int s)
 {
     num_vec S_a; num_vec GP_a; num_vec H_a; num_vec D_a;
@@ -167,6 +171,7 @@ double get_QALY_2(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, nu
     return tot_Q;
 }
 
+// get_CostT -> convert the cases averted to cost
 double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
 {
     num_vec GP_a; num_vec BD_a;
@@ -195,6 +200,7 @@ double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
     return tot_CT;
 }
 
+// get_CostT -> determine the cost of administratoin and purchasing the prophylactic
 double get_CostP(double no_pal, double no_vac, double p_ad, cea_state_t& cea_state, int t_w, int s)
 {
     cea_state.doses_pal[t_w] = no_pal;

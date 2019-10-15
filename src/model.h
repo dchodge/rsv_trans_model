@@ -9,12 +9,12 @@
 #ifndef model_h
 #define model_h
 
-/// Everything in this sections concerns the parameters of the MCMC chain
 
 using namespace boost::math;
 
 namespace param
 {
+    // Everything in this strcture outlines the five differen detection model structures (outlined in Appendix)
     struct param_state_t
     {
         str_vec pA_vec = {"pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA1", "pA2", "pA2", "pA2", "pA2", "pA3", "pA3", "pA4", "pA4", "pA4", "pA4", "pA4", "pA4", "pA4"
@@ -67,6 +67,7 @@ namespace param
             "seed1", "seed2","psi"
         };
         
+        // Lower bound for the 25 parameters (for the truncated normal, values cannot be less than these values )
         num_vec Low_b_all =  {  14,      2,      2,      0.5,      0.5,     60,    // xi, si, g0, g1, g2, om
             0,     0,     0,    0,      0.0,      0.05,      0.0,      0.0,     0.0,         // pA1, pA2, pA3, pA4, rho, alpha_i, d1, d2, d3
             0,     0,     0,    0,                                          // phi, qp, qc, b1
@@ -79,6 +80,7 @@ namespace param
             0,     0,  0                                                      // seed1, seed2
         };
         
+        // Upper bound for the 25 parameter for the truncated normal, values cannot exceed these values )
         num_vec Upp_b_all =  {    180,     8,     20,    1,      1,      365,    // xi, si, g0, g1, g2, om
             1,     1,     1,      1,     1,     0.95,    1,      1,      1,         // pA1, pA2, pA3, pA4, rho, alpha_i, d1, d2, d3
             1,     0.1,     1,    2,                                                // phi,  qp, qc, b1
@@ -133,6 +135,11 @@ namespace param
             
         }
         
+        // FUNC: lprior_dist ->  get values for the prior out
+        // ARG: par -> parameter for which prior is needed
+        // ARG: pars -> structure of parameter values
+        // ARG: sample -> false: evaluate at point in prior, true: sample a point from dist
+
         double lprior_dist(string par, param::param_state_t& pars, bool sample)
         {
             if (par == "xi")
@@ -316,14 +323,16 @@ namespace param
         }
     };
     
-    
+    // FUNC: init_prior_sample ->  get the initial prior samples
+    // ARG: pars -> structure of parameter values
     void init_prior_sample(param_state_t& pars)
     {
         for (int i = 0; i < pars.dim_cal; i++)
             pars.mapofParam[pars.paramFit[i]] = pars.lprior_dist(pars.paramFit[i], pars, true);
     }
     
-
+    // FUNC: init_prior_sample ->  get the log prior for metropolis hastings
+    // ARG: pars -> structure of parameter values
     double prior_dist_get(param_state_t& pars)
     {
         double pp = 0;
@@ -333,6 +342,8 @@ namespace param
         return pp;
     }
     
+    // FUNC: init_prior_sample ->  exact a vector of the prior values from the pars structure
+    // ARG: pars -> structure of parameter values
     VectorXd parameterfitonly(param_state_t& pars)
     {
         VectorXd fitonly(pars.dim_cal);
@@ -342,7 +353,10 @@ namespace param
         return fitonly;
     }
     
-    // This comes straight after the points has been sampled
+    // FUNC: update -> update the pars structure with the new point
+    // ARG: pars -> structure of parameter values
+    // ARG: prop_par -> proposed point from the metropolis hastings
+
     void update(param_state_t& pars, VectorXd prop_par)
     {
         for (int i = 0; i < pars.dim_cal; i++)
@@ -350,12 +364,13 @@ namespace param
     }
 }
 
+/// Describe method for obtaining the likelihood given the parameters
 
 namespace get_ll
 {
     /// Describe method for obtaining the likelihood given the parameters
     /** ///////////////////////////////////////////////////////////////////////////////////
-     ////////////////////////////// 2. Import stuff //////////////////////////////
+     ////////////////////////////// 1. Import stuff //////////////////////////////
      //////////////////////////////////////////////////////////////////////////////////// **/
     string const filepath = "/Users/davidhodgson/Dropbox/PhD/code_full/";
     
@@ -424,7 +439,7 @@ namespace get_ll
     string fileannualinc = dout + "soln/annual_sample_Z.txt";
 
     
-    
+    // functions to help with the import
     namespace import
     {
         
@@ -513,6 +528,7 @@ namespace get_ll
             return popsize_alt;
         }
         
+        // All the data needed for the model
         vector2D const d_w = get_2d(FileRDMSRSVpos, 364, 25);
         vector2D const Scalar_test = get_2d(FileRDMSScalarTest, 25, 7);
         
@@ -555,7 +571,7 @@ namespace get_ll
     }
     using namespace import;
 
-    
+    // FUNC: prop_init_ex- > function to get the initial proportion of each age group in each exposure group
     num_vec prop_init_ex(double l, double a1, double a2)
     {
         num_vec prop(4);
@@ -566,6 +582,7 @@ namespace get_ll
         return prop;
     }
     
+    // FUNC: initial_M - > function to get the initial proportion of each age group in each MATERNAL group
     num_vec initial_M(const param::param_state_t& pars)
     {
         double xi = 1.0/(pars.mapofParam.find("xi")->second);
@@ -580,6 +597,8 @@ namespace get_ll
         return init_con;
     }
     
+    // FUNC: init_cond - > function to get the initial conditions for the epidemiological state variables
+
     num_vec init_cond(const param::param_state_t& pars)
     {
         
@@ -661,6 +680,7 @@ namespace get_ll
         return comp_size_init;
     }
     
+
     struct ODE_dynamics
     {
         double t_start, t_burn, t_end, dt;
@@ -669,6 +689,7 @@ namespace get_ll
         ODE_dynamics(const double t_start_i, const double t_burn_i, const double t_end_i, const double dt_i): t_start(t_start_i), t_burn(t_burn_i), t_end(t_end_i) , dt(dt_i) {}
     };
     
+    // Class dscribing the system of ODEs for calibrating
     class ODE_desc
     {
         param::param_state_t  pars;
@@ -855,7 +876,7 @@ namespace get_ll
                     muBv = muB;
                 else
                     muBv = 0;
-                
+                // These differentail equations appear at the start of the appendix
                 dxdt[0 + 23*j] = (1.0-p_vul)*muBv - x[0 + 23*j]*xi                                   - x[0+23*j]*eta[j+1] + x[0+pj]*eta[j];
                 
                 dxdt[1 + 23*j] =  p_vul*muBv + x[0 + 23*j]*xi       - x[1 + 23*j]*I_temp*beta        - x[1+23*j]*eta[j+1] + x[1+pj]*eta[j];
@@ -890,6 +911,7 @@ namespace get_ll
         }
     };
 
+    // llikelihood_func -> function to calculate the likelihood (at a time t)
     double llikelihood_func(VectorXd& inc, const param::param_state_t& pars, int t_w, VectorXd& ep_t){
         
         double ll = 0;
@@ -901,11 +923,14 @@ namespace get_ll
             if (x > N)
                 return log(0);
             
+            // log binomial -> use stirlings approximation for log (x take N)
             ll += stirl(N) - stirl(x) - stirl(N-x) + x*log(ep_t(a)) + (N-x)*log(1-ep_t(a));
         }
         return ll;
     }
     
+    
+   // get_lprior -> function for log prior
     double get_lprior(double ll, param::param_state_t &pars)
     {
         if (std::isinf(ll) || std::isnan(ll))
@@ -914,6 +939,7 @@ namespace get_ll
            return param::prior_dist_get(pars);
     }
     
+    // check_stability -> check the system of ODEs is working (no negative values)
     inline double check_stability(num_vec x, double t)
     {
         long double X_w = 0;
@@ -934,6 +960,7 @@ namespace get_ll
             return 1.0;
     }
     
+    
     inline double check_incidence(VectorXd inc_tot)
     {
         double pl = 0;
@@ -949,7 +976,7 @@ namespace get_ll
         return pl;
     }
     
-    /// Function which is called from other classes, output must be the likelhood
+    // get_likelihood -> Functionto get the likehood over all time for a set of parameter values pars
     double get_likelihood(param::param_state_t& pars) //(7 years)
     {
 
@@ -1047,7 +1074,7 @@ namespace get_ll
         return ll;
     }
     
-    
+    //  I think everything from here is redundant.... 
     num_vec init_cond_par(const param::param_state_t& pars)
     {
         

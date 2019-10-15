@@ -575,7 +575,7 @@ namespace sim_ouput
                         x_pal_inc[t_w%52] = x_pal;
                         x_vac_inc[t_w%52] = x_vac;
 
-                        cea_state.Q += get_QALY_2(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
+                        cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
                         cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
                         cea_state.CP += get_CostP(x_pal, x_vac, inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
                         t_w++;
@@ -611,7 +611,7 @@ namespace sim_ouput
                     cea_state.GP_tot[a] = 0; cea_state.BD_tot[a] = 0;
                 }
             }
-            cea_state.Q += get_QALY_2(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
+            cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
             cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
             cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
         }

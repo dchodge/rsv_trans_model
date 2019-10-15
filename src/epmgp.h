@@ -6,6 +6,7 @@
 #ifndef epmgp_h
 #define epmgp_h
 
+// Everything in this class is just for quick sampling from a multivariate normal distribution
 
 namespace Eigen {
     namespace internal {
@@ -99,9 +100,14 @@ namespace Eigen {
     
 } // end namespace Eigen
 
+
+
+
+
+
 using namespace Eigen;
 
-
+// Everything in this class is just for evaluating a point in a multivaraite truncated normal distribution
 
 namespace mvn
 {

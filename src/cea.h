@@ -9,6 +9,7 @@
 #ifndef cea_h
 #define cea_h
 
+// Structure to keep the variables assocaited with the cost-effectiveness analysis
 struct cea_state_t
 {
     // Empty vectors
@@ -32,9 +33,10 @@ struct cea_state_t
     // initial values in constructor
     cea_state_t()
     {
-        time_hor = 10;
-        disc = 0.035;
-
+        time_hor = 10; // 10 years
+        disc = 0.035; // 3.5%
+        
+        // Initialise everyting as 0
         for (int i = 0; i < NoAgeG; i++)
         {
             S_tot.push_back(0); H_tot.push_back(0); D_tot.push_back(0);
@@ -74,57 +76,15 @@ struct cea_state_t
     }
 };
 
-
-// get_QALY -> convert the cases averted to QALY loss
-double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& H_tot, num_vec& D_tot, int s)
-{
-    num_vec S_a; num_vec H_a; num_vec D_a;
-
-    PRNG_s rng(s);
-    
-    S_a = get_S(inci, mcmc_state, s);
-    H_a = get_H(inci, s);
-    D_a = get_D(inci, s);
-    
-    // Keep track of totals
-    for (int a = 0; a < NoAgeG; a++)
-    {
-        S_tot[a] += S_a[a]; H_tot[a] += H_a[a]; D_tot[a] += D_a[a];
-    }
-    
-    double tot_Q = 0;
-    double val = 0;
-    
-    for (int a = 0; a < 16; a++){
-        val = Q_S1(rng);
-        tot_Q += S_a[a]*val;
-    }
-    
-    for (int a = 16; a < NoAgeG; a++){
-        val = Q_S2(rng);
-        tot_Q += S_a[a]*val;
-    }
-    
-    for (int a = 0; a < 16; a++){
-        val = Q_H1(rng);
-        tot_Q += H_a[a]*val;
-    }
-    
-    for (int a = 16; a < NoAgeG; a++){
-        val = Q_H2(rng);
-        tot_Q += H_a[a]*val;
-    }
-    
-    for (int a = 0; a < NoAgeG; a++){
-        val = Q_D[a](rng);
-        tot_Q += D_a[a]*val;
-    }
-    return tot_Q;
-}
-
-
-// get_QALY -> convert the cases averted to QALY loss
-double get_QALY_2(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& GP_tot, num_vec& H_tot, num_vec& D_tot, int s)
+// FUNC: get_QALY -> convert the cases averted to QALY loss
+// Arg:"inci" -> vector length 25 -> incidence of cases averted per age group for current time step
+// Arg:"mcmc_state" -> class of the current mcmc state
+// Arg:"S_tot" -> vector length 25 -> running number of symptomatic cases averted (per age group)
+// Arg:"GP_tot" -> vector length 25 -> running number of GP consultations averted (per age group)
+// Arg:"H_tot" -> vector length 25 -> running number of hospital cases averted (per age group)
+// Arg:"D_tot" -> vector length 25 -> running number of deaths averted (per age group)
+// Arg:"s" -> seed number
+double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& GP_tot, num_vec& H_tot, num_vec& D_tot, int s)
 {
     num_vec S_a; num_vec GP_a; num_vec H_a; num_vec D_a;
     
@@ -171,7 +131,10 @@ double get_QALY_2(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, nu
     return tot_Q;
 }
 
-// get_CostT -> convert the cases averted to cost
+// FUNC: get_CostT -> convert the cases averted to cost
+// Arg:"inci" -> vector length 25 -> incidence of cases averted per age group for current time step
+// Arg:"GP_tot" -> vector length 25 -> running number of GP consultations averted (per age group)
+// Arg:"BD_tot" -> vector length 25 -> running number of bed days averted (per age group)
 double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
 {
     num_vec GP_a; num_vec BD_a;
@@ -200,7 +163,14 @@ double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
     return tot_CT;
 }
 
-// get_CostT -> determine the cost of administratoin and purchasing the prophylactic
+// FUNC: get_CostTP -> convert the number of doses given to cost of administration
+// Arg:"no_pal" -> number of Palivizumab given this time step
+// Arg:"no_vac" -> number of non-Palivizumab doses given this time step
+// Arg:"p_ad" -> price of adminsitration for this prophylactic
+// Arg:"cea_state" -> instance of cea structure
+// Arg:"t_w" -> week no
+// Arg:"s" -> seed number
+
 double get_CostP(double no_pal, double no_vac, double p_ad, cea_state_t& cea_state, int t_w, int s)
 {
     cea_state.doses_pal[t_w] = no_pal;
@@ -208,7 +178,7 @@ double get_CostP(double no_pal, double no_vac, double p_ad, cea_state_t& cea_sta
     return no_pal*57.5 + no_vac*p_ad;
 }
 
-
+// I think this is redundant
 namespace CEA{
      //Import the relevant files (PXCP, PXCT, PXQ, PXDose)
     class CSVReader

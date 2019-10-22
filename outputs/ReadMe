@@ -1,0 +1,64 @@
+FOLDER: cal
+CONTENTS:
+- FOLDER: m2d5cnt (stands for maternal model 2 (dynamic) and detection model 5 (see Supplementary)), theres 10 of these all together but I didn't bother uploading them as all as maternal model 2 and detection model 5  was the best-fit model.
+INSIDE THIS FOLDER THERE IS
+-- covar			covariance matrix at time points in all of mc chain (every 100)
+-- MC_acceptance		the acceptance probability at time points in all of mc chain every 100)
+-- MC_acceptance_post		the acceptance probability at time points after burn in 
+-- MC_chain			the values of the parameters of the whole mc chain 
+-- MC_chain_explore		the proposed values of the whole mc chain
+-- MC_chain_like		the likelihood values of the whole mc chain
+-- MC_chain_like_post		the likelihood values of the converged mc chain
+-- posterior			the posterior distribution (the values of parameters of the mc chain after the burn in)
+-- MC_chain_T_full		the adaptive temperature ladder
+***Suffixes of 	A < coldest chain
+		B <- second coldest chain
+		C <- third coldest chain
+		D <- fourth coldest chain
+posterior_A <- is the value of the posterior used for the intervention model 
+
+FOLDER: data (just lots of junk data in here which I haven't added to git)
+
+FOLDER: inter (results from intervention programmes)
+- FOLDER:NONE		 -> results for simulation with NO intervention programme
+- FOLDER:PAL_VHR_S	 -> results for simulation with Palivizumab, very-high-risk seasonal programme
+- FOLDER:MAB_VHR_S	 -> results for simulation with long-acting monoclonal antibodies very-high-risk seasonal programme
+- FOLDER:MAB_HR_S	 -> results for simulation with long-acting monoclonal antibodies high-risk seasonal programme
+- FOLDER:MAB_HR_S+	 -> results for simulation with long-acting monoclonal antibodies high-risk seasonal plus programme 
+- FOLDER:MAB_ALL_S_	 -> results for simulation with long-acting monoclonal antibodies all infants seasonal programme
+- FOLDER:MAB_ALL_S+	 -> results for simulation with long-acting monoclonal antibodies all infants seasonal plus programme
+- FOLDER:MAT_S		 -> results for simulation with maternal vaccine seasonally
+- FOLDER:MAT_A		 -> results for simulation with maternal vaccine year-round
+- FOLDER:VAC_INF_S	 -> results for simulation with infants vaccines (2mo) seasonally
+- FOLDER:VAC_INF_A	 -> results for simulation with infant vaccines (2mo) year-round
+- FOLDER:VAC_2_4_S	 -> results for simulation with vaccine on 2-4 year olds (seasonally)
+- FOLDER:VAC_5_9_S	 -> results for simulation with vaccine on 5-9 year olds (seasonally)
+- FOLDER:VAC_5_14_S	 -> results for simulation with vaccine on 5-14 year olds (seasonally)
+- FOLDER:VAC_75_S	 -> results for simulation with vaccine on 75+ year olds (seasonally)
+- FOLDER:VAC_65_S	 -> results for simulation with vaccine on 65+ year olds (seasonally)
+
+**IF a folder has the suffix 	_H_PRO, sensitivity analysis where the average duration of monoclonal protection is changed from 250 days->365days
+				_L_PRO, sensitivity analysis where the average duration of monoclonal protection is changed from 250 days->150days
+				_H_MAT, sensitivity analysis where the average duration of maternal protection is increased by 25%
+
+INSDE THESE OLDERS THERE ARE
+-- death.csv, average annual number of deaths per age group for each of the scenarios (10 seeds in this example)
+-- gp.csv, average annual number of gp consultations per age group for each of the scenarios (10 seeds in this example)
+-- hosp.csv, average annual number of hospitalisations per age group for each of the scenarios (10 seeds in this example)
+-- bd.csv, average annual number of bed days per age group for each of the scenarios (10 seeds in this example)
+-- symp.csv, average annual number of symptomatic infections per age group for each of the scenarios (10 seeds in this example)
+-- inc.csv, average annual number of infections per age group for each of the scenarios (10 seeds in this example)
+-- qaly.csv, total discounted qaly loss for the programme over 10 years
+-- no_doses.csv number of doses given per week (columns) of Palivizumab (odd rows) and other vaccine (even columns)
+-- incpri.csv, number of primary infection that occur in each age group
+-- cost_tre.csv, total cost of treating RSV infections over the 10 years (with discounting):
+-- cost_pro.csv, total cost of administering the prophylactic over the 10 years (with discounting)
+-- inc.csv, total annual incidence in each age, clinical risk, and maternal vaccine group, first 9 columns are age group 1, next 9 columns are age group 2 etc. (ignore column headings). First three columns are parents (group p, non-zero for ages 15-44), next three are cocooned persons (group c, none zero for maternal vaccine in infants less than 1 and parents aged 15-44), next three columns are non-parents (group n). The first three columns are VHR, HR, NR. Therefore for each age group it goes:
+(p+VHR, p+HR, p+NR, c+VHR, c+HR, c+NR, n+VHR, n+HR, n+NR), etc.:
+
+-- ** IF a file has a suffix _d then it is only the direct protection (the indirect effects are ignored, i.e. no herd protection)
+
+FOLDER: soln (outputs from the Calibration)
+- annual_sample -> estimate annual number of infections per year (used to calcuate risks = number of outcomes/incidence
+- risks -> all the distributions for the probability of hosp, death, GP consultations and number of infections per age group and per clinical risk group (these need to be manually added to the outcomes.h  
+

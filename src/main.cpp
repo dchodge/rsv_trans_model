@@ -208,7 +208,7 @@ void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc
         sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, ind_s2[i]);
     }
 
-    inter_data.prog_no = {"NONE_H_MAT",   "PAL_VHR_S_H_MAT", "MAB_VHR_S_H_MAT", "MAB_HR_S_H_MAT", "MAB_HR_S+_H_MAT",  "MAB_ALL_S_H_MAT",  "MAB_ALL_S+_H_MAT",  "MAT-S_H_MAT",  "MAT-A_H_MAT"};
+    inter_data.prog_no = {"NONE_H_MAT",   "PAL_VHR_S_H_MAT", "MAB_VHR_S_H_MAT", "MAB_HR_S_H_MAT", "MAB_HR_S+_H_MAT",  "MAB_ALL_S_H_MAT",  "MAB_ALL_S+_H_MAT",  "MAT_S_H_MAT",  "MAT_A_H_MAT"};
     inter_data.om_mab = 1.0/250.0;
     inter_data.xi_b = 0.75;
 
@@ -232,6 +232,7 @@ int main(int argc, const char * argv[]) {
 /**      1. CALIBRATE MODEL         **/
 /**********************************/
     // FUNC1:"parallel_temp_mcmc -> Run the MCMC parallel tempering algorithm
+    // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data)
     //parallel_temp_mcmc(paramFitA, 25000, 50000, 100, 20, 12, 'A');
     
 /**********************************/
@@ -253,16 +254,18 @@ int main(int argc, const char * argv[]) {
     
     // DETERMINE INCIDENCE SAMPLES FROM POSTERIOR, R0/REFF VALUES AND INCIDENCE
     // FUNC2:"posterior_inc -> Determine incidence from posterior samples
+    // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data) AND THE POSTERIOR_A FILE
    // posterior_inc(paramFitA, mcmc_state, pars, seed);
     
 /**********************************/
 /**     3. FIND OPTIMAL WEEK            **/
 /**********************************/
-    // GET INTERVENTION PROGRAMME CHARACTERISTICS
+    // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data), EVERYTHING IN THE inter class AND THE POSTERIOR_A FILE
     cal::inter_data_t inter_data;
     inter_data.get_eff(inter_data, seed.size());
     
     // FUNC3:"find_optimal_week" -> Determine the optimal month for seasonal programmes to begin
+    // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data) AND THE POSTERIOR_A FILE
     //find_optimal_week(pars, mcmc_state, inter_data, seed);
     
 /**********************************/
@@ -280,7 +283,8 @@ int main(int argc, const char * argv[]) {
 /**********************************/
     // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
     // FUNC5b:"intervention_p_SA" -> Run the simualtions for the sensitivtiy analysis
-
+    // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data), EVERYTHING IN THE inter class AND THE POSTERIOR_A FILE
+    
     intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
     intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
 }

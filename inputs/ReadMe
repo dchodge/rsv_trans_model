@@ -1,0 +1,31 @@
+FOLDER: cnt_mat (contact matrices)
+CONTENTS
+- a list of the average number of contacts made between each age group under different scenarios
+prefix
+- cntC -> indicates number of conversation contacts
+- cntP -> indicates number of physical contacts
+- cntMinC -> indicates number of conversations contact minutes 
+- cntMinP -> indicates number of physical contacts minutes
+suffix
+- _A -> all contacts
+- _AH -> household only
+- _nwn -> between non-parents
+- _nwp -> non-parents with parents
+- _pwn -> parents with non-parents
+- _pwp -> parents with parents
+
+FOLDER: demo (demography)
+CONTENTS
+- age_rate.txt -> rate of ageing per day from age group to the next (eta^a, for age group a)
+- bd_rate.txt -> birth and death rate per day (number of live births and deaths per day, mu)
+- birth_rate_daily -> number of live births per day of year (NOT USED)
+- palpro_age.txt -> number of persons who are VHR in each age group (up to 9 months)
+- palpro.txt -> total number of persons who are VHR
+- pop_age_17_conv.txt -> population of each age group (2017 population estimates, N^a for age group a)
+- prop_mat.txt -> proportion of age group 15-24, 25-34, 35-44 who are new mothers 
+- prop_par.txt -> proportion of each age group who are women and have given birth in the last 12 months (u^a)
+- proprisk -> proportion of each age group who are in risk group VHR (first 25 entries) HR (entries 26-50) and NR (entries 51-75)
+
+
+FOLDER rdms (PATIENT SENSITIVE SO SHOULD BE EMPTY)
+- number of positive RSV samples per age group per week of RSV

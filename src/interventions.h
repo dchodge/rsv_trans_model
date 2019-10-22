@@ -392,7 +392,7 @@ namespace cal
         
         inter_data_t()
         {
-            prog_no =   {"P_",   "P0_", "P1_",   "P2_",  "P3_",  "P4_",  "P5_",  "P6_",  "P7_",  "P8_",  "P9_","P10_", "P11_", "P12_", "P13_", "P14_"};
+            prog_no =   {"NONE",   "PAL_VHR_S", "MAB_VHR_S", "MAB_HR_S", "MAB_HR_S+",  "MAB_ALL_S",  "MAB_ALL_S+",  "MAT-S",  "MAT-A",  "VAC-INF-S",  "VAC-INF-A",  "VAC-2-4-S","VAC-5-9-S", "VAC-5-14-S", "VAC-75-S", "VAC-65-S"};
             prog_name = {"Base_","Pal_","mABVHR_","mABHR_","mABHR_","mAB_","mAB_","matS_","matA_","infS_"  ,"infA_"  ,"Pre"    ,"Sch1_" ,"Sch2_"  ,"Eld1_"   ,"Eld2_"};
             cal_type = {"None", "None", "Mvhr", "Mhr", "Mhr_p", "Mlr", "Mlr_p", "mat", "mat", "LAV_inf", "LAV_inf", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald", "LAV_ald"};
             t_group = {cal::G_base, cal::G_base, cal::G_base, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_0mo, cal::G_par, cal::G_par, cal::G_2mo, cal::G_2mo, cal::G_2_4, cal::G_5_10, cal::G_5_14, cal::G_75_, cal::G_65_};

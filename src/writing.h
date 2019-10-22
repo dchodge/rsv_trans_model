@@ -656,9 +656,7 @@ namespace sim_ouput
             num_vec up_take_base = cal::gen_daily(inter_data.uprate[iN], inter_data.start_w[iN]);
             inter_data.rate = up_take_base;
             cal::Calendar_full cal(inter_data, s, iN);
-            cout << "HEy?" << endl;
             int_post(pars, mcmc_state, cal, inter_data, cea_state, seed[s], iN, false);
-            cout << "Hey??" << endl;
 
             record_inc({(double)seed[s]}); record_inc.add(cea_state.inci);
             record_inc_pri({(double)seed[s]}); record_inc_pri.add(cea_state.inci_pri);

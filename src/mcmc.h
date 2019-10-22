@@ -36,7 +36,7 @@ namespace amh
         size_t no_accepted;     // number of accepted points in the markov chain
         size_t no_adaptive;     // number of adaptive points accepted in the markov chain
         bool adaptive_step;     // indicator function to detemrine if the step is adaptive
-        
+
         double prop_llikelihood;    // holder for the proposed log-likelihood
         double prop_lprior;         // holder for the proposed log-prior
         double prop_hnr;                    // holder for the random probability samples to compare with the acceptance probability

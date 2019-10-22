@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <chrono>
 #include <ctime>
+#include <ctime>
+#include <map>
 
 // Preprocessor derivatives
 #define PI 3.14159265   // Global definition of pi
@@ -72,7 +74,6 @@ void parallel_temp_mcmc(const std::vector<std::string>& paramFit, int Nburn, int
     for (int j = 0; j < Nchain; j++)
     {
         amh::amh_state_t mcmc_state_t = mhp::run_MH::initialize_mcmc(paramFit, pars_r, Nburn, Nrun, Nthin_all, Nthin_pos);
-        mcmc_state_t.adap_covar = true;
         mcmc_state_t.T = mhp_state.T_full(0, j);
         mcmc_state.push_back(mcmc_state_t);
     }
@@ -134,7 +135,7 @@ void find_optimal_week(param::param_state_t& pars, amh::amh_state_t& mcmc_state,
 {
     asc::Recorder recorder; // record the values (in ascent package)
     num_vec ind_s = {0, 2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14};
-    str_vec sea_name = {"P_","P1_","P2_","P3_","P4_","P5_","P6_","P8_","P10_","P11_","P12_","P13_","P14_"};
+    str_vec sea_name = {"NONE","MAB_VHR_S","MAB_HR_S","MAB_HR_S+","MAB_ALL_S","MAB_ALL_S+","MAT_S","VAC_INF_S","VAC_2_4_S","VAC_5_9_S","VAC_5_14_S","VAC_75_S","VAC_65_S"};
     int s = 0;
     num_vec tot_incp(12,0);
     
@@ -190,8 +191,8 @@ void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc
     num_vec ind_s1 = {0, 1, 2, 3, 4, 5, 6};
     num_vec ind_s2 = {0, 1, 2, 3, 4, 5, 6};
     num_vec ind_s3 = {0, 1, 2, 7, 8};
-    
-    inter_data.prog_no =  {"PA_", "P0A_", "P1A_", "P2A_",  "P3A_",  "P4A_",  "P5A_"};
+
+    inter_data.prog_no =  {"NONE_L_PRO", "PAL_VHR_S_L_PRO", "MAB_VHR_S_L_PRO", "MAB_HR_S_L_PRO", "MAB_HR_S+_L_PRO",  "MAB_ALL_S_L_PRO",  "MAB_ALL_S+_L_PRO"};
     inter_data.om_mab = 1.0/150.0;
     for (int i = 0; i < 7; i++)
     {
@@ -199,15 +200,15 @@ void intervention_p_SA(std::vector<std::string> paramFit, amh::amh_state_t& mcmc
         sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, ind_s1[i]);
     }
     
-    inter_data.prog_no =   {"PB_", "P0B_", "P1B_", "P2B_",  "P3B_",  "P4B_",  "P5B_"};
+    inter_data.prog_no =   {"NONE_H_PRO", "PAL_VHR_S_H_PRO", "MAB_VHR_S_H_PRO", "MAB_HR_S_H_PRO", "MAB_HR_S+_H_PRO",  "MAB_ALL_S_H_PRO",  "MAB_ALL_S+_H_PRO"};
     inter_data.om_mab = 1.0/365.0;
     for (int i = 0; i < 7; i++)
     {
         cout << ind_s1[i] << endl;
         sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, ind_s2[i]);
     }
-    
-    inter_data.prog_no =   {"PC_", "P0C_", "P1C_", "P2C_",  "P3C_",  "P4C_", "P5C_", "P6C_", "P7C_"};
+
+    inter_data.prog_no = {"NONE_H_MAT",   "PAL_VHR_S_H_MAT", "MAB_VHR_S_H_MAT", "MAB_HR_S_H_MAT", "MAB_HR_S+_H_MAT",  "MAB_ALL_S_H_MAT",  "MAB_ALL_S+_H_MAT",  "MAT-S_H_MAT",  "MAT-A_H_MAT"};
     inter_data.om_mab = 1.0/250.0;
     inter_data.xi_b = 0.75;
 
@@ -232,7 +233,7 @@ int main(int argc, const char * argv[]) {
 /**********************************/
     // FUNC1:"parallel_temp_mcmc -> Run the MCMC parallel tempering algorithm
     //parallel_temp_mcmc(paramFitA, 25000, 50000, 100, 20, 12, 'A');
-    mp
+    
 /**********************************/
 /**      2. EVALUATE MODEL FIT        **/
 /**********************************/
@@ -262,7 +263,7 @@ int main(int argc, const char * argv[]) {
     inter_data.get_eff(inter_data, seed.size());
     
     // FUNC3:"find_optimal_week" -> Determine the optimal month for seasonal programmes to begin
-    find_optimal_week(pars, mcmc_state, inter_data, seed);
+    //find_optimal_week(pars, mcmc_state, inter_data, seed);
     
 /**********************************/
 /**     4. COMPARE CONSISTENCY (other file)         **/
@@ -280,6 +281,6 @@ int main(int argc, const char * argv[]) {
     // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
     // FUNC5b:"intervention_p_SA" -> Run the simualtions for the sensitivtiy analysis
 
-    //intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
-    //intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
+    intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
+    intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
 }

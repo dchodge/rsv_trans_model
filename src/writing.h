@@ -166,7 +166,7 @@ namespace sim_ouput
                 {
                     for (int a = 0; a < NoAgeG; a++)
                     {
-                        inci[t_w][a] = x0[22 + 23*a]*ep_t(a); //Incidence at t_d = 7;
+                        inci[t_w][a] = x0[22 + 23*a]*ep_t(a)*Scalar_test[a][t_w/52];; //Incidence at t_d = 7;
                         x0[22 + 23*a] = 0.0;
                     }
                     t_w ++;

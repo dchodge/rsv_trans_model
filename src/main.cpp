@@ -255,7 +255,7 @@ int main(int argc, const char * argv[]) {
     // DETERMINE INCIDENCE SAMPLES FROM POSTERIOR, R0/REFF VALUES AND INCIDENCE
     // FUNC2:"posterior_inc -> Determine incidence from posterior samples
     // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data) AND THE POSTERIOR_A FILE
-   // posterior_inc(paramFitA, mcmc_state, pars, seed);
+    //posterior_inc(paramFitA, mcmc_state, pars, seed);
     
 /**********************************/
 /**     3. FIND OPTIMAL WEEK            **/
@@ -286,5 +286,6 @@ int main(int argc, const char * argv[]) {
     // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data), EVERYTHING IN THE inter class AND THE POSTERIOR_A FILE
     
     intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
-    intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
+    //intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
+    
 }

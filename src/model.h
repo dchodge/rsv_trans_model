@@ -372,7 +372,7 @@ namespace get_ll
     /** ///////////////////////////////////////////////////////////////////////////////////
      ////////////////////////////// 1. Import stuff //////////////////////////////
      //////////////////////////////////////////////////////////////////////////////////// **/
-    string const filepath = "/Users/davidhodgson/Dropbox/PhD/code_full/";
+    string const filepath = "/Users/davidhodgson/Dropbox/PhD/code_full/"; // change to a relative path 
     
     string const din = filepath + "inputs/";
     // Demographic files
@@ -1384,8 +1384,6 @@ namespace get_ll
         for(int i=0; i < boost::size(num_vec_wcba) ;i++){sum_wcb = sum_wcb + num_vec_wcba[i];}
         return sum_wcb;
     }
-
-    
 };
 using namespace get_ll;
 

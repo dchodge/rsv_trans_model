@@ -1381,7 +1381,7 @@ namespace get_ll
             double CB2_temp = (x[1+mg+j*ag] + x[6+mg+j*ag] + x[11+mg+j*ag] + x[16+mg+j*ag] + x[2+mg+j*ag] + x[7+mg+j*ag] + x[12+mg+j*ag] + x[17+mg+j*ag])/((double)get_ll::popsize_n[j]);
             num_vec_wcba.push_back(CB2_temp/3.0);
         }
-        for(int i=0; i < boost::size(num_vec_wcba) ;i++){sum_wcb = sum_wcb + num_vec_wcba[i];}
+        for(int i = 0; i < boost::size(num_vec_wcba) ;i++){sum_wcb = sum_wcb + num_vec_wcba[i];}
         return sum_wcb;
     }
 };

@@ -1,9 +1,27 @@
+RSV Transmission model
+
 # David Hodgson's RSV transmission model 
 
 This is the c++ code is used to determine the cost-effectiveness of different intervention programmes agaisnt RSV infection in England. The model comprises three main parts:
 1) A code to calibrate the dynamic transmission model to RSV positive samples using a parallel tempering MCMC method
 2) Codes to evaluate the impact of the intervention prgorammes at preventing outcomes, including symptomatic infections, hospitalised cases, deaths, GP consultations, and bed days.
 3) A cost-effectiveness analysis to convert the outcomes averted into QALY loss and costs.
+
+## LICENSE
+Copyright (C) 2019  David Hodgson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Installation
 A c++14 compliant complier is required

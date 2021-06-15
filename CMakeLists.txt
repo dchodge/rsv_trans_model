@@ -5,11 +5,12 @@ project (rsv_model)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
+find_package(Boost COMPONENTS filesystem REQUIRED)
 set(EXECUTABLE_OUTPUT_PATH exe)
 
 include_directories(
-	headers 
+	headers
+	${Boost_INCLUDE_DIRS} 
 )
 
 add_executable(
@@ -27,5 +28,5 @@ add_executable(
 
 target_link_libraries(
 	rsv_model
-	boost_random 
+	${Boost_FILESYSTEM_LIBRARY} 
 )

@@ -372,7 +372,7 @@ namespace get_ll
     /** ///////////////////////////////////////////////////////////////////////////////////
      ////////////////////////////// 1. Import stuff //////////////////////////////
      //////////////////////////////////////////////////////////////////////////////////// **/
-    string const filepath = "/Users/davidhodgson/Dropbox/PhD/code_full/"; // change to a relative path 
+    string const filepath = "/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/"; // change to a relative path 
     
     string const din = filepath + "inputs/";
     // Demographic files

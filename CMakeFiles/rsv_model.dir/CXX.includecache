@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/cea.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/cea.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/epmgp.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/epmgp.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/interventions.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/interventions.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/main.cpp
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/main.cpp
 iostream
 -
 fstream
@@ -50,35 +50,35 @@ boost/random/mersenne_twister.hpp
 boost/random/normal_distribution.hpp
 -
 Eigen/Dense
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/Eigen/Dense
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/Eigen/Dense
 ascent/Ascent.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/ascent/Ascent.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/ascent/Ascent.h
 pre.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/pre.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/pre.h
 epmgp.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/epmgp.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/epmgp.h
 model.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/model.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/model.h
 mcmc.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/mcmc.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/mcmc.h
 interventions.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/interventions.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/interventions.h
 outcomes.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/outcomes.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/outcomes.h
 cea.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/cea.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/cea.h
 writing.h
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/writing.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/writing.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/mcmc.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/mcmc.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/model.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/model.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/outcomes.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/outcomes.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/pre.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/pre.h
 
-/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/src/writing.h
+/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/src/writing.h
 
 /usr/local/include/boost/aligned_storage.hpp
 boost/type_traits/aligned_storage.hpp

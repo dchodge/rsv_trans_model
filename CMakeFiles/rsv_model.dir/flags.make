@@ -4,7 +4,7 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK
 
-CXX_INCLUDES = -I"/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/headers" -isystem /usr/local/include
+CXX_INCLUDES = -I/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/headers -isystem /usr/local/include
 
 CXX_FLAGS =  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -std=c++14
 

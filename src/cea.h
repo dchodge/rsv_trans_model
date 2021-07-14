@@ -84,7 +84,7 @@ struct cea_state_t
 // Arg:"H_tot" -> vector length 25 -> running number of hospital cases averted (per age group)
 // Arg:"D_tot" -> vector length 25 -> running number of deaths averted (per age group)
 // Arg:"s" -> seed number
-double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& GP_tot, num_vec& H_tot, num_vec& D_tot, int s)
+double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_vec& GP_tot, num_vec& H_tot, num_vec& D_tot, int s, bool add_only)
 {
     num_vec S_a; num_vec GP_a; num_vec H_a; num_vec D_a;
     
@@ -103,39 +103,43 @@ double get_QALY(num_vec inci, amh::amh_state_t& mcmc_state, num_vec& S_tot, num_
     
     double tot_Q = 0;
     double val = 0;
-    
-    for (int a = 0; a < 16; a++){
-        val = Q_NHS1(rng);
-        tot_Q += (S_a[a] - GP_a[a] - H_a[a])*val;
+    if (add_only) {
+        return 0;
+    } else {
+        
+        for (int a = 0; a < 16; a++){
+            val = Q_NHS1(rng);
+            tot_Q += (S_a[a] - GP_a[a] - H_a[a])*val;
+        }
+        
+        for (int a = 16; a < NoAgeG; a++){
+            val = Q_NHS2(rng);
+            tot_Q += (S_a[a] - GP_a[a] - H_a[a])*val;
+        }
+        
+        for (int a = 0; a < 16; a++){
+            val = Q_HS1(rng);
+            tot_Q += (GP_a[a] + H_a[a])*val;
+        }
+        
+        for (int a = 16; a < NoAgeG; a++){
+            val = Q_HS2(rng);
+            tot_Q += (GP_a[a] + H_a[a])*val;
+        }
+        
+        for (int a = 0; a < NoAgeG; a++){
+            val = Q_D[a](rng);
+            tot_Q += D_a[a]*val;
+        }
+        return tot_Q;
     }
-    
-    for (int a = 16; a < NoAgeG; a++){
-        val = Q_NHS2(rng);
-        tot_Q += (S_a[a] - GP_a[a] - H_a[a])*val;
-    }
-    
-    for (int a = 0; a < 16; a++){
-        val = Q_HS1(rng);
-        tot_Q += (GP_a[a] + H_a[a])*val;
-    }
-    
-    for (int a = 16; a < NoAgeG; a++){
-        val = Q_HS2(rng);
-        tot_Q += (GP_a[a] + H_a[a])*val;
-    }
-    
-    for (int a = 0; a < NoAgeG; a++){
-        val = Q_D[a](rng);
-        tot_Q += D_a[a]*val;
-    }
-    return tot_Q;
 }
 
 // FUNC: get_CostT -> convert the cases averted to cost
 // Arg:"inci" -> vector length 25 -> incidence of cases averted per age group for current time step
 // Arg:"GP_tot" -> vector length 25 -> running number of GP consultations averted (per age group)
 // Arg:"BD_tot" -> vector length 25 -> running number of bed days averted (per age group)
-double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
+double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s, bool add_only)
 {
     num_vec GP_a; num_vec BD_a;
 
@@ -146,21 +150,26 @@ double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
     // Keep track of totals
     for (int a = 0; a < NoAgeG; a++)
     {
-        GP_tot[a] += GP_a[a]; BD_tot[a] += BD_a[a];
+        BD_tot[a] += BD_a[a];
     }
+    
     double tot_CT = 0;
     double GP_c = 37.4;
+    if (add_only) {
+        return 0;
+    } else {
     
-    for (int a = 0; a < NoAgeG; a++)
-        tot_CT += GP_a[a]*GP_c;
-    
-    for (int a = 0; a < 16; a++)
-        tot_CT += BD_a[a]*C_H1(rng);
-    
-    for (int a = 16; a < NoAgeG; a++)
-        tot_CT += BD_a[a]*C_H1(rng);
-    
-    return tot_CT;
+        for (int a = 0; a < NoAgeG; a++)
+            tot_CT += GP_a[a]*GP_c;
+        
+        for (int a = 0; a < 16; a++)
+            tot_CT += BD_a[a]*C_H1(rng);
+        
+        for (int a = 16; a < NoAgeG; a++)
+            tot_CT += BD_a[a]*C_H2(rng);
+        
+        return tot_CT;
+    }
 }
 
 // FUNC: get_CostTP -> convert the number of doses given to cost of administration
@@ -171,11 +180,15 @@ double get_CostT(num_vec inci, num_vec& GP_tot, num_vec& BD_tot, int s)
 // Arg:"t_w" -> week no
 // Arg:"s" -> seed number
 
-double get_CostP(double no_pal, double no_vac, double p_ad, cea_state_t& cea_state, int t_w, int s)
+double get_CostP(double no_pal, double no_vac, double p_ad, cea_state_t& cea_state, int t_w, int s, bool add_only)
 {
-    cea_state.doses_pal[t_w] = no_pal;
-    cea_state.doses_pro[t_w] = no_vac;
-    return no_pal*57.5 + no_vac*p_ad;
+    if(add_only) {
+        return 0;
+    } else {
+        cea_state.doses_pal[t_w] = no_pal;
+        cea_state.doses_pro[t_w] = no_vac;
+        return no_pal * 57.5 + no_vac * p_ad;
+    }
 }
 
 // I think this is redundant

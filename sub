@@ -1,0 +1,7 @@
+#!/bin/bash
+#$ -l mem_free=4G,h_vmem=4G
+#$ -q long.q
+#$ -cwd -V
+#$ -t 1-15  
+
+./rsv_model ${SGE_TASK_ID} rsv_run_${SGE_TASK_ID}.out

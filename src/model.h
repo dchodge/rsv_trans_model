@@ -840,7 +840,7 @@ namespace get_ll
         void operator() (  num_vec &x , num_vec &dxdt , const double  t  )
         {
             t1 = (int)t%365;
-            beta = (1 + b1*(1 + exp(-((t1/365 - phi))*((t1/365 - phi))/(2*psi*psi))));
+           // beta = (1 + b1*(1 + exp(-((t1/365 - phi))*((t1/365 - phi))/(2*psi*psi))));
             //beta = (1 + b1*cos((t/365.0-phi)*2*PI));
 #ifdef DynamicMat
             num_vec num_vec_wcba;

@@ -237,7 +237,6 @@ namespace manip_contact {
     vector2D get_nwn(double prop_c, char s)
     {
         // cnt_matrix_p cnt_matrix_p_h
-        // (cHij[[i]][[j]]/2.0 ) + (cij[[i]][[j]] - cHij[[i]][[j]])*(1 - proppar[[j]])
         vector2D nwn_e(NoAgeG,vector<double>(NoAgeG,0));
         if (s == 'p')
         {
@@ -334,8 +333,6 @@ namespace manip_contact {
         return nwc_e;
     }
 }
-
-
 
 
 
@@ -566,9 +563,10 @@ namespace cal
                 cal_mat_LR = mat_calendar(init, t_group, cov, t_start, t_end, 'p', eff_mat, eff_vac);
                 cal_mat_LR_dose = mat_calendar(init, t_group, cov, t_start, t_end, 'd', eff_mat, eff_vac);
             }
-            else
-                cout << "No cal" << endl;
-        }
+            else {
+                
+            }
+         }
         
         MatrixXd PAL_calendar(MatrixXd calendar, char t, double eff_pal)
         {

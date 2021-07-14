@@ -70,7 +70,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = "/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model"
+CMAKE_BINARY_DIR = /Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,9 +99,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/CMakeFiles" "/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model//CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/CMakeFiles /Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/davidhodgson/Dropbox/My Mac (David’s MacBook Air)/Documents/research/rsv/packages/rsv_trans_model/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

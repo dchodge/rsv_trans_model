@@ -284,8 +284,9 @@ int main(int argc, const char * argv[]) {
     // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
     // FUNC5b:"intervention_p_SA" -> Run the simualtions for the sensitivtiy analysis
     // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data), EVERYTHING IN THE inter class AND THE POSTERIOR_A FILE
-    
-    intervention_p(paramFitA, mcmc_state, pars, inter_data, seed);
+    int i =  strtol(argv[1], nullptr, 0);
+    sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, i);
+
     //intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);
 }
 

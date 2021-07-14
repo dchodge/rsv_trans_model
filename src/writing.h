@@ -575,9 +575,9 @@ namespace sim_ouput
                         x_pal_inc[t_w%52] = x_pal;
                         x_vac_inc[t_w%52] = x_vac;
 
-                        cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
-                        cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
-                        cea_state.CP += get_CostP(x_pal, x_vac, inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
+                        cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s, false)*exp(-t_w*r/52.0);
+                        cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s, false)*exp(-t_w*r/52.0);
+                        cea_state.CP += get_CostP(x_pal, x_vac, inter_data.c_ad[iN], cea_state, t_w, s, false)*exp(-t_w*r/52.0);
                         t_w++;
                     }
                     for (int a = 0; a < NoAgeG; a++)
@@ -596,8 +596,9 @@ namespace sim_ouput
             }
         }
    // After equilibirum just use last year with an increasing t_w;
-        for (int t_w = 4*52; t_w  < (cea_state.time_hor+1)*52; t_w++)
+        for (int t_w = 4*52; t_w  < (cea_state.time_hor + 1)*52; t_w++)
         {
+            bool stop_cal = false;
             inci_temp.clear();
             for (int a = 0; a < NoAgeG; a++)
                 for (int j = 0; j < 9; j++)
@@ -610,10 +611,11 @@ namespace sim_ouput
                     cea_state.S_tot[a] = 0; cea_state.H_tot[a] = 0; cea_state.D_tot[a] = 0;
                     cea_state.GP_tot[a] = 0; cea_state.BD_tot[a] = 0;
                 }
+                stop_cal = true;
             }
-            cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s)*exp(-t_w*r/52.0);
-            cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s)*exp(-t_w*r/52.0);
-            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s)*exp(-t_w*r/52.0);
+            cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s, stop_cal)*exp(-t_w*r/52.0);
+            cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s, stop_cal)*exp(-t_w*r/52.0);
+            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s, stop_cal)*exp(-t_w*r/52.0);
         }
         
   // Find the total annual incidences for the equilibirum year
@@ -651,6 +653,7 @@ namespace sim_ouput
         
         for (int s = 0; s < seed.size(); s++)
         {
+            cout << "Sample number: " << s << endl;
             cea_state_t cea_state;
             
             num_vec up_take_base = cal::gen_daily(inter_data.uprate[iN], inter_data.start_w[iN]);
@@ -670,7 +673,6 @@ namespace sim_ouput
             record_q({(double)seed[s]}); record_q.add(cea_state.Q);
             record_cp({(double)seed[s]}); record_cp.add(cea_state.CP);
             record_ct({(double)seed[s]}); record_ct.add(cea_state.CT);
-
         }
         
         record_inc.csv(get_ll::dout + "inter/" + inter_data.prog_no[iN] + "/" + "inc", col_name);

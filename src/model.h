@@ -375,6 +375,7 @@ namespace get_ll
     string const filepath = "/Users/davidhodgson/documents/research/rsv/packages/rsv_trans_model/"; // change to a relative path 
     
     string const din = filepath + "inputs/";
+
     // Demographic files
     const string in_demo = din + "demo/";
     string FileDemo = in_demo + "pop_age_17_conv.txt"; //The source of the demography of the UK age groups
@@ -392,6 +393,8 @@ namespace get_ll
     
     // Contact matrices
     const string in_cnt_mat = din + "cnt_mat/";
+
+    
 #ifdef Minutes
     string filecontact_phys = in_cnt_mat + "cntMinPA.txt"; //The source of the contact data from AJ STudy (<1yrs)
     string filecontact_phys_home = in_cnt_mat + "cntMinPAH.txt"; //The source of the contact data from AJ STudy (<1yrs)

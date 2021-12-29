@@ -248,9 +248,8 @@ int main(int argc, const char * argv[]) {
             mcmc_state.posterior(s,d) = post_in[s][d];
     
     // SEED SET OF SAMPLES FROM THE POSTERIOR DISTRIBUTIONS
-    num_vec seed;
-    for (int s = 0; s < 10; s++)
-        seed.push_back(uniform_dist_disc(0, mcmc_state.NK2-1, 'r'));
+    string const FileSeedSamples = get_ll::din +  "seed_samples.csv";
+    num_vec const seed = get_ll::get_1d(FileSeedSamples, 1000);
     
     // DETERMINE INCIDENCE SAMPLES FROM POSTERIOR, R0/REFF VALUES AND INCIDENCE
     // FUNC2:"posterior_inc -> Determine incidence from posterior samples
@@ -284,7 +283,7 @@ int main(int argc, const char * argv[]) {
     // FUNC5a:"intervention_p" -> Run the simualtions for the 14 intervention progammes
     // FUNC5b:"intervention_p_SA" -> Run the simualtions for the sensitivtiy analysis
     // DATA REQUIRED: EVERYTHING IN THE INPUTS FOLDER (see model.h for importing of thesis data), EVERYTHING IN THE inter class AND THE POSTERIOR_A FILE
-    int i =  strtol(argv[1], nullptr, 0);
+    int i =  strtol(argv[1], nullptr, 0) - 1;
     sim_ouput::write_interventions(pars, mcmc_state, inter_data, seed, i);
 
     //intervention_p_SA(paramFitA, mcmc_state, pars, inter_data, seed);

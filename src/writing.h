@@ -517,7 +517,7 @@ namespace sim_ouput
     {
         VectorXd sample_post;
         asc::Euler integrator;
-        get_ll::ODE_dynamics ode_par(0.0, 365.0*1, 365.0*4, 1.0);
+        get_ll::ODE_dynamics ode_par(0.0, 365.0*2, 365.0*2 + 365.0*10, 1.0);
         sample_post = mcmc_state.posterior.row(s).transpose();
         update(pars, sample_post);
                 
@@ -596,7 +596,7 @@ namespace sim_ouput
             }
         }
    // After equilibirum just use last year with an increasing t_w;
-        for (int t_w = 4*52; t_w  < (cea_state.time_hor + 1)*52; t_w++)
+        for (int t_w = 3*52; t_w  < (cea_state.time_hor + 1)*52; t_w++)
         {
             bool stop_cal = false;
             inci_temp.clear();
@@ -613,9 +613,9 @@ namespace sim_ouput
                 }
                 stop_cal = true;
             }
-            cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s, stop_cal)*exp(-t_w*r/52.0);
-            cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s, stop_cal)*exp(-t_w*r/52.0);
-            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s, stop_cal)*exp(-t_w*r/52.0);
+            cea_state.Q += get_QALY(inci_temp, mcmc_state, cea_state.S_tot, cea_state.GP_tot, cea_state.H_tot, cea_state.D_tot, s, stop_cal) * exp(-t_w*r/52.0);
+            cea_state.CT += get_CostT(inci_temp, cea_state.GP_tot, cea_state.BD_tot, s, stop_cal) * exp(-t_w*r/52.0);
+            cea_state.CP += get_CostP(x_pal_inc[t_w%52], x_vac_inc[t_w%52], inter_data.c_ad[iN], cea_state, t_w, s, stop_cal) * exp(-t_w*r/52.0);
         }
         
   // Find the total annual incidences for the equilibirum year
